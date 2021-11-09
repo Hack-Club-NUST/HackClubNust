@@ -1,10 +1,6 @@
 {
   "name": "hackclub",
-<<<<<<< HEAD
   "homepage": "https://Hack-Club-NUST.github.io/HackClubNust",
-=======
-  "homepage": ".",
->>>>>>> 97afb1cc016fd6cdf74dccb49acd91621367d82f
   "version": "0.1.0",
   "private": true,
   "dependencies": {
