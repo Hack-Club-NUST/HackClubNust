@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import "./team.css";
-import jstopsimage from '../eventimages/teamimages/jstopsimage.jpg'
+import jstopsimage from '../eventimages/teamimages/jstopsimage.jpeg'
 import astsocialimage from '../eventimages/teamimages/Uzair.jpg'
 import gsimage from '../eventimages/teamimages/Alina-01.jpg'
 import presimage from '../eventimages/teamimages/president.jpg'
