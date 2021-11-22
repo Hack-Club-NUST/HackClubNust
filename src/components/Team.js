@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import "./team.css";
+import gsimage from '../eventimages/teamimages/Alina-01.jpg'
 import presimage from '../eventimages/teamimages/president.jpg'
 //import gensecimage from '../eventimages/teamimages/'
 import pressecimage from '../eventimages/teamimages/PS.jpeg'
@@ -104,7 +105,7 @@ export default function Team() {
                     <div className="col-md-4 col-sd-12 make-flex team-card   make-up-for-sd">
                         <div className="our-team sec-image">
                             <div className="pic">
-                                <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.png?1570566555"></img>
+                                <img src={gsimage}></img>
                                 <ul className="social">
                                     <li><a href="#" className="Teamfacebook"></a></li>
                                     
