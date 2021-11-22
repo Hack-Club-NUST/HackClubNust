@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import "./team.css";
+import astsocialimage from '../eventimages/teamimages/Uzair.jpg'
 import gsimage from '../eventimages/teamimages/Alina-01.jpg'
 import presimage from '../eventimages/teamimages/president.jpg'
 //import gensecimage from '../eventimages/teamimages/'
@@ -357,7 +358,7 @@ export default function Team() {
                                     <div className="pic">
                                         <img src={asthrimage}></img>
                                         <ul className="social">
-                                            <li><a href="http://facebook.com/saifullah.shahid2002" className="Teamfacebook"></a></li>
+                                            <li><a href="http://facebook.com/saifsafsf" className="Teamfacebook"></a></li>
                                            
                                             <li><a href="http://instagram.com/saifsafsf" className="Teaminsta"></a></li>
                                             <li><a href="http://linkedin.com/in/saif-ullah-71a0731ba" className="Teamlinkedin"></a></li>
@@ -366,6 +367,23 @@ export default function Team() {
                                     <div className="team-content">
                                         <h3 className="title">Saif Ullah</h3>
                                         <span className="post">Assistant Team Lead(HR)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-4 col-sd-12 make-flex team-card  ">
+                                <div className="our-team sec-image">
+                                    <div className="pic">
+                                        <img src={asthrimage}></img>
+                                        <ul className="social">
+                                            <li><a href="https://www.facebook.com/uzair.khalid.54390" className="Teamfacebook"></a></li>
+                                           
+                                            <li><a href="https://www.instagram.com/_uzair_khalid/" className="Teaminsta"></a></li>
+                                            <li><a href="https://www.linkedin.com/in/uzair-khalid-a834b81a4/" className="Teamlinkedin"></a></li>
+                                        </ul>
+                                    </div>
+                                    <div className="team-content">
+                                        <h3 className="title">Uzair Khalid</h3>
+                                        <span className="post">Assistant Team Lead(SMM)</span>
                                     </div>
                                 </div>
                             </div>
