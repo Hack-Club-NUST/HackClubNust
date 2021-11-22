@@ -4,22 +4,22 @@ import "./team.css";
 import gsimage from '../eventimages/teamimages/Alina-01.jpg'
 import presimage from '../eventimages/teamimages/president.jpg'
 //import gensecimage from '../eventimages/teamimages/'
-import pressecimage from '../eventimages/teamimages/PS.jpeg'
+import pressecimage from '../eventimages/teamimages/PS.jpg'
 //import joinsecimage from '../eventimages/teamimages/'
 import joinsecwebimage from '../eventimages/teamimages/js(web).jpg'
 import treasimage from '../eventimages/teamimages/treas.jpg'
 import leadhrimage from '../eventimages/teamimages/lead(hr).jpg'
-import leadwebimage from '../eventimages/teamimages/lead(webb).jpeg'
-import leadpartnimage from '../eventimages/teamimages/lead(partnership).png'
-import leadprojimage from '../eventimages/teamimages/lead(project).jpeg'
+import leadwebimage from '../eventimages/teamimages/lead(webb).jpg'
+import leadpartnimage from '../eventimages/teamimages/lead(partnership).jpg'
+import leadprojimage from '../eventimages/teamimages/lead(project).jpg'
 import leadfinaimage from '../eventimages/teamimages/lead (finance).jpg'
-import leadgraimage from '../eventimages/teamimages/lead(graph).png'
+import leadgraimage from '../eventimages/teamimages/lead(graph).jpg'
 import leadsocialimage from '../eventimages/teamimages/lead(socialmedia).jpg'
-import leadcommimage from '../eventimages/teamimages/lead(comm).png'
+import leadcommimage from '../eventimages/teamimages/lead(comm).jpg'
 import leadconimage from '../eventimages/teamimages/lead(content).jpg'
 import asthrimage from '../eventimages/teamimages/ast-lead(hr).jpg'
-import astwebimage from '../eventimages/teamimages/ast-lead (web).jpeg'
-import astprojimage from '../eventimages/teamimages/ast-lead(project).jpeg'
+import astwebimage from '../eventimages/teamimages/ast-lead (web).jpg'
+import astprojimage from '../eventimages/teamimages/ast-lead(project).jpg'
 import astgraimage from '../eventimages/teamimages/ast-lead(graphics).jpg'
 import astcommimage from '../eventimages/teamimages/ast-lead(comm).jpg'
 import astcontimage from '../eventimages/teamimages/ast-lead(content).jpg'
@@ -69,7 +69,7 @@ export default function Team() {
                     <div className="col-md-4 col-sd-12 make-flex team-card   above-president">
                         <div className="our-team sec-image">
                             <div className="pic">
-                            <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.png?1570566555"></img>
+                            <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.jpg?1570566555"></img>
                                 <ul className="social">
                                     <li><a href="#" className="Teamfacebook"></a></li>
                                   
@@ -141,7 +141,7 @@ export default function Team() {
                     <div className="col-md-4 col-sd-12 make-flex team-card  ">
                         <div className="our-team">
                             <div className="pic">
-                                <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.png?1570566555"></img>
+                                <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.jpg?1570566555"></img>
                                 <ul className="social">
                                     <li><a href="#" className="Teamfacebook"></a></li>
                                    
