@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import "./team.css";
+import jstopsimage from '../eventimages/teamimages/jstopsimage.jpg'
 import astsocialimage from '../eventimages/teamimages/Uzair.jpg'
 import gsimage from '../eventimages/teamimages/Alina-01.jpg'
 import presimage from '../eventimages/teamimages/president.jpg'
@@ -70,7 +71,7 @@ export default function Team() {
                     <div className="col-md-4 col-sd-12 make-flex team-card   above-president">
                         <div className="our-team sec-image">
                             <div className="pic">
-                            <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.jpg?1570566555"></img>
+                            <img src={gsimage}></img>
                                 <ul className="social">
                                     <li><a href="#" className="Teamfacebook"></a></li>
                                   
@@ -142,7 +143,7 @@ export default function Team() {
                     <div className="col-md-4 col-sd-12 make-flex team-card  ">
                         <div className="our-team">
                             <div className="pic">
-                                <img src="https://s3.amazonaws.com/codenewbie-assets/original/colt-steele.jpg?1570566555"></img>
+                                <img src={jstopsimage}></img>
                                 <ul className="social">
                                     <li><a href="#" className="Teamfacebook"></a></li>
                                    
