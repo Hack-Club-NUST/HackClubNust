@@ -18,7 +18,7 @@ import leadgraimage from '../eventimages/teamimages/lead(graph).jpg'
 import leadsocialimage from '../eventimages/teamimages/lead(socialmedia).jpg'
 import leadcommimage from '../eventimages/teamimages/lead(comm).jpg'
 import leadconimage from '../eventimages/teamimages/lead(content).jpg'
-import asthrimage from '../eventimages/teamimages/ast-lead(hr).jpg'
+import asthrimage from '../eventimages/teamimages/saifullah.jpg'
 import astwebimage from '../eventimages/teamimages/ast-lead (web).jpg'
 import astprojimage from '../eventimages/teamimages/ast-lead(project).jpg'
 import astgraimage from '../eventimages/teamimages/ast-lead(graphics).jpg'
@@ -373,7 +373,7 @@ export default function Team() {
                             <div className="col-md-4 col-sd-12 make-flex team-card  ">
                                 <div className="our-team sec-image">
                                     <div className="pic">
-                                        <img src={asthrimage}></img>
+                                        <img src={astsocialimage}></img>
                                         <ul className="social">
                                             <li><a href="https://www.facebook.com/uzair.khalid.54390" className="Teamfacebook"></a></li>
                                            
