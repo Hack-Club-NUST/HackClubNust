@@ -1,0 +1,182 @@
+[
+ {
+  "slug": "ai-shrine",
+  "kind": "ai",
+  "file": "/game/images/ai-shrine.jpg",
+  "license": "Public domain",
+  "author": "Benlisquare",
+  "source": "https://commons.wikimedia.org/wiki/File:Algorithmically-generated_landscape_artwork_of_forest_with_Shinto_shrine.png",
+  "bytes": 84593
+ },
+ {
+  "slug": "ai-nightcity",
+  "kind": "ai",
+  "file": "/game/images/ai-nightcity.jpg",
+  "license": "CC BY 4.0",
+  "author": "\u00a9 VulcanSphere / CC BY 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:NightCitySphere_(SDXL).jpg",
+  "bytes": 108024
+ },
+ {
+  "slug": "ai-tanuki",
+  "kind": "ai",
+  "file": "/game/images/ai-tanuki.jpg",
+  "license": "Public domain",
+  "author": "Microsoft Designer powered by DALL-E 3, prompted by Vulpomoto",
+  "source": "https://commons.wikimedia.org/wiki/File:AI_tanuki_Japanese_text.jpg",
+  "bytes": 107110
+ },
+ {
+  "slug": "ai-dalle-photo",
+  "kind": "ai",
+  "file": "/game/images/ai-dalle-photo.jpg",
+  "license": "PD",
+  "author": "See Creator:DALL-E 2",
+  "source": "https://en.wikipedia.org/wiki/File:DALL-E_2_artificial_intelligence_digital_image_generated_photo.jpg",
+  "bytes": 189039
+ },
+ {
+  "slug": "ai-shrine-b",
+  "kind": "ai",
+  "file": "/game/images/ai-shrine-b.jpg",
+  "license": "Public domain",
+  "author": "Benlisquare",
+  "source": "https://commons.wikimedia.org/wiki/File:Algorithmically-generated_landscape_artwork_of_forest_with_Shinto_shrine_using_negative_prompt_for_round_stones.png",
+  "bytes": 72553
+ },
+ {
+  "slug": "hu-faisal",
+  "kind": "human",
+  "file": "/game/images/hu-faisal.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Fassifarooq",
+  "source": "https://commons.wikimedia.org/wiki/File:Faisal_Mosque,_Islamabad_III.jpg",
+  "bytes": 158515
+ },
+ {
+  "slug": "hu-damankoh",
+  "kind": "human",
+  "file": "/game/images/hu-damankoh.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Xubayr Mayo",
+  "source": "https://commons.wikimedia.org/wiki/File:Daman-E-Koh.jpg",
+  "bytes": 262935
+ },
+ {
+  "slug": "hu-constitution",
+  "kind": "human",
+  "file": "/game/images/hu-constitution.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Zacharie Grossen",
+  "source": "https://commons.wikimedia.org/wiki/File:Constitution_Avenue.jpg",
+  "bytes": 186260
+ },
+ {
+  "slug": "hu-ataturk",
+  "kind": "human",
+  "file": "/game/images/hu-ataturk.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Obaid747",
+  "source": "https://commons.wikimedia.org/wiki/File:Ataturk_Avenue_-_Islamabad.JPG",
+  "bytes": 316096
+ },
+ {
+  "slug": "ai-gan-face",
+  "kind": "ai",
+  "file": "/game/images/ai-gan-face.jpg",
+  "license": "Public domain",
+  "author": "bod lnga klang",
+  "source": "https://commons.wikimedia.org/wiki/File:GAN_deepfake_white_girl.jpg",
+  "bytes": 75582
+ },
+ {
+  "slug": "ai-gan-woman",
+  "kind": "ai",
+  "file": "/game/images/ai-gan-woman.jpg",
+  "license": "Public domain",
+  "author": "Owlsmcgee",
+  "source": "https://commons.wikimedia.org/wiki/File:Woman_1.jpg",
+  "bytes": 49713
+ },
+ {
+  "slug": "ai-pope",
+  "kind": "ai",
+  "file": "/game/images/ai-pope.jpg",
+  "license": "Public domain",
+  "author": "Midjourney",
+  "source": "https://commons.wikimedia.org/wiki/File:Pope_Francis_in_puffy_winter_jacket.jpg",
+  "bytes": 64797
+ },
+ {
+  "slug": "ai-faceswap",
+  "kind": "ai",
+  "file": "/game/images/ai-faceswap.jpg",
+  "license": "CC BY 2.0",
+  "author": "miguelb",
+  "source": "https://commons.wikimedia.org/wiki/File:Face_swap_with_Xavier.jpg",
+  "bytes": 33326
+ },
+ {
+  "slug": "ai-opera",
+  "kind": "ai",
+  "file": "/game/images/ai-opera.jpg",
+  "license": "Public domain",
+  "author": "Left intentionally blank",
+  "source": "https://commons.wikimedia.org/wiki/File:Th%C3%A9%C3%A2tre_D%E2%80%99op%C3%A9ra_Spatial.png",
+  "bytes": 89178
+ },
+ {
+  "slug": "hu-6throad",
+  "kind": "human",
+  "file": "/game/images/hu-6throad.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "King Eliot",
+  "source": "https://commons.wikimedia.org/wiki/File:6th_road_Rawalpindi.jpg",
+  "bytes": 138457
+ },
+ {
+  "slug": "hu-fawara",
+  "kind": "human",
+  "file": "/game/images/hu-fawara.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Fahads1982",
+  "source": "https://commons.wikimedia.org/wiki/File:Fawara_Chowk_Rawalpindi.jpg",
+  "bytes": 66979
+ },
+ {
+  "slug": "hu-faizabad",
+  "kind": "human",
+  "file": "/game/images/hu-faizabad.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Fahads1982",
+  "source": "https://commons.wikimedia.org/wiki/File:Faizabad_Interchange,_Rawalpindi.jpg",
+  "bytes": 140584
+ },
+ {
+  "slug": "hu-college",
+  "kind": "human",
+  "file": "/game/images/hu-college.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "King Eliot",
+  "source": "https://commons.wikimedia.org/wiki/File:College_Road_Rawalpindi.jpg",
+  "bytes": 113816
+ },
+ {
+  "slug": "hu-bagh",
+  "kind": "human",
+  "file": "/game/images/hu-bagh.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Khalid Mahmood",
+  "source": "https://commons.wikimedia.org/wiki/File:Bagh_Sardaran.JPG",
+  "bytes": 102071
+ },
+ {
+  "slug": "hu-fjwu",
+  "kind": "human",
+  "file": "/game/images/hu-fjwu.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Chillingcold",
+  "source": "https://commons.wikimedia.org/wiki/File:FJWU_main_building.JPG",
+  "bytes": 76836
+ }
+]
