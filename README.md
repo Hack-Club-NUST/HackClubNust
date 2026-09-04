@@ -1,14 +1,15 @@
 # Hack Club NUST
 
-Single-page site for the Hack Club NUST games. Two of them, both playable:
+Single-page site for the Hack Club NUST games.
 
-- **AI vs Human** — 15 rounds of prose, code and images. Some rounds hand you one
-  artifact and ask who made it; some put two side by side and ask which is the
-  model's. Every call is answered with the tell you missed.
-- **Cipher Tunes** — a Polybius square rendered as music. Every letter is two notes,
-  and a word is a melody you decode by ear.
+- **AI vs Human** — playable. 15 rounds of prose, code and images. Some rounds hand
+  you one artifact and ask who made it; some put two side by side and ask which is
+  the model's. Every call is answered with the tell you missed.
+- **A freshers game** — in design. Played at the orientation stall, it decides which
+  interest band a fresher walks away wearing.
 
-Both share one sign-in and write to per-game leaderboards in MongoDB.
+Players sign in once with name and email; runs land in MongoDB with per-game
+leaderboards.
 
 ## Stack
 
@@ -205,97 +206,12 @@ full-size originals gets you rate-limited fast. The route that works is the
 `en.wikipedia.org` API with `iiurlwidth=900`, which returns server-side **thumbnail**
 URLs — smaller, faster, and the access pattern Wikimedia actually asks for.
 
-## Cipher Tunes
+## Per-game leaderboards
 
-The second game. Click **Play Now** on the Cipher Tunes card.
-
-### The cipher
-
-A **Polybius square rendered as music**. Five pitches of a C major pentatonic scale
-index a 5x5 grid; every letter is a two-note motif — first note names the row,
-second names the column, and where they cross is the letter. I and J share a cell,
-as in the paper cipher.
-
-```
-       C   D   E   G   A        row note plays LOW  (C3-A3)
-   C   A   B   C   D   E        col note plays HIGH (C5-A5)
-   D   F   G   H  I/J  K
-   E   L   M   N   O   P        H = D then E
-   G   Q   R   S   T   U        A = C then C
-   A   V   W   X   Y   Z
-```
-
-Three properties make it playable rather than a hearing test:
-
-- **Pentatonic** — no two notes in the set can clash, so any word comes out as music.
-- **Split registers** — row notes are over an octave below column notes, so you can
-  never lose track of which half of a motif you are hearing.
-- **Whole-tone spacing** — the closest two pitches differ by 12.2%, roughly double
-  the threshold where a listener can tell two notes apart.
-
-### Why the audio is synthesised
-
-There are no audio files. 25 letters would mean 25 pitch-accurate samples plus
-licensing, megabytes of loading, and tuning that drifts between recordings. Two
-oscillators and an envelope in `audio.ts` give an exact frequency, instant playback,
-nothing to ship, and nothing to license. A soft C2 drone sits under word playback so
-a tune reads as music instead of test tones.
-
-Browsers block audio until a user gesture, so `unlock()` runs from the first click.
-
-### A run
-
-**12 rounds**: 5 single letters to build the mapping, then 7 words of increasing
-length (3,3,4,4,5,5,6). Letter rounds are answered by clicking the grid — the key is
-also the input. Word rounds are typed.
-
-| | |
-|---|---|
-| Letter round | 150 base, 20s |
-| Word round | 100 x length, 12s + 6s per letter |
-| Speed | up to +40% of base, scaled by clock left |
-| Ear mode | **x1.5 on everything** |
-| Replays | 2 free, then −15% each (capped at −60%) |
-| Reveal a letter | −25% each, 2 maximum |
-| Streaks | +100/+250/+500/+1000 at 3/5/7/10 |
-
-**The clock only starts when the tune finishes playing** — you are never punished for
-the length of the audio, only for how long you take to think.
-
-Ranks run Perfect Pitch → Golden Ear → Tuned In → Half a Melody → Humming Along →
-Tone Deaf.
-
-### Ear mode, and accessibility
-
-By default a visual guide lights up **which of the five pitches is currently
-sounding** — deliberately not which letter it resolves to, so guided play still
-makes you do the decoding. Ear mode turns the lights off entirely and pays 1.5x.
-
-The guide doubles as the accessibility path: a player who cannot use the audio can
-still follow the pitch ladder visually and decode from it. The grid, the ladder and
-the demo tune are all on screen before a run starts.
-
-### Files
-
-```
-src/game/cipher/
-  cipher.ts            grid, motifs, and the pure tune builder
-  audio.ts             the synth — no assets
-  words.ts             word bank (no J)
-  scoring.ts           clocks, points, penalties, ranks, run building
-  useCipherTunes.ts    phase machine, timer, replays, hints
-  components/          intro, round view, results, grid, note ladder
-```
-
-`buildTune()` is pure and deterministic, so the music is unit-testable: the same
-word always yields the same note events, and the test decodes them back to letters.
-
-## Two games, one collection
-
-Every run carries a `game` field (`ai-human` | `cipher-tunes`) and every query is
-scoped to it, so the two boards are independent while players are shared — one
-sign-in covers both games. An unrecognised game id falls back to `ai-human` rather
-than erroring.
+Every run carries a `game` field and every query is scoped to it, so each game gets
+an independent board while players are shared — one sign-in covers all of them.
+Adding a game means adding its id to `GAMES` in `server/db.mjs`; an unrecognised id
+falls back to the first entry rather than erroring.
 
 ## Deploying to Vercel
 

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Music } from 'lucide-react';
+import { Brain, Sparkles } from 'lucide-react';
 import AiHumanGame from '../game/components/AiHumanGame';
-import CipherTunesGame from '../game/cipher/components/CipherTunesGame';
 
 const GAMES = [
   {
@@ -15,13 +14,13 @@ const GAMES = [
     status: 'live' as const,
   },
   {
-    id: 'cipher-tunes',
-    Icon: Music,
-    title: 'Cipher Tunes',
-    tagline: 'Listen & Decode',
-    desc: 'Every letter is two notes: one names its row, one names its column, and where they cross is your letter. Learn five pitches, then decode whole words out of a melody. Turn the lights off for ear mode and everything scores 1.5x.',
-    meta: ['5×5 pitch grid', 'Letters → words', 'Ear mode 1.5x'],
-    status: 'live' as const,
+    id: 'freshers',
+    Icon: Sparkles,
+    title: 'Next Game',
+    tagline: 'In Design',
+    desc: 'A welcome game for freshers, built around the interest bands we hand out at the stall. Play it, earn your band, wear what you are into. Being designed now.',
+    meta: ['Freshers stall', 'Earn your band', 'Coming soon'],
+    status: 'soon' as const,
   },
 ];
 
@@ -130,11 +129,6 @@ export default function Games() {
 
       <AiHumanGame
         open={activeGame === 'ai-vs-human'}
-        onClose={() => setActiveGame(null)}
-      />
-
-      <CipherTunesGame
-        open={activeGame === 'cipher-tunes'}
         onClose={() => setActiveGame(null)}
       />
     </section>

@@ -165,16 +165,16 @@ export default function Hero({ entranceComplete }: HeroProps) {
               animate={entranceComplete ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.2 }}
             >
-              Hack Club NUST builds games that put your instincts against the machine. Two arenas:
-              one where you separate human work from model output, and one where you break the
-              cipher before the clock breaks you.
+              Hack Club NUST builds games worth queuing for. One puts your instincts against the
+              machine: human work or model output, you make the call. The next one reads what you
+              reach for and hands you a band in the colour of what you are actually into.
             </motion.p>
           </div>
 
           <h1 className={`${headingClass} text-left md:text-right`}>
-            <ScrambleIn text="Break" delay={700} triggered={entranceComplete} />
+            <ScrambleIn text="Find" delay={700} triggered={entranceComplete} />
             <br />
-            <ScrambleIn text="The Cipher" delay={1000} triggered={entranceComplete} />
+            <ScrambleIn text="Your Band" delay={1000} triggered={entranceComplete} />
           </h1>
         </div>
       </motion.div>

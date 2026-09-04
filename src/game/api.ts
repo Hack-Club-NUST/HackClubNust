@@ -1,6 +1,6 @@
 import type { LeaderboardEntry, Player, Standing } from './types';
 
-export type GameId = 'ai-human' | 'cipher-tunes';
+export type GameId = 'ai-human';
 
 export interface RunSubmission {
   playerId: string;
