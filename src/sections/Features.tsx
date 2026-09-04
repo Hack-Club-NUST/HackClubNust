@@ -3,7 +3,7 @@ import { VIDEOS } from '../videos';
 
 const FEATURES = [
   { title: 'Spot The Fake', desc: 'Call human or model on prose, code and images.' },
-  { title: 'Interest Bands', desc: 'Play at the stall, leave wearing what you are into.' },
+  { title: 'Cipher Tunes', desc: 'Seven letters, seven tunes, one melody to spell out.' },
   { title: 'Streak Scoring', desc: 'Accuracy and speed compound. Guessing does not.' },
   { title: 'Club Leaderboard', desc: 'Weekly standings across the NUST campus.' },
 ];

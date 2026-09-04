@@ -166,15 +166,15 @@ export default function Hero({ entranceComplete }: HeroProps) {
               transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.2 }}
             >
               Hack Club NUST builds games worth queuing for. One puts your instincts against the
-              machine: human work or model output, you make the call. The next one reads what you
-              reach for and hands you a band in the colour of what you are actually into.
+              machine: human work or model output, you make the call. The other hands you seven
+              tunes for seven letters and plays you a word.
             </motion.p>
           </div>
 
           <h1 className={`${headingClass} text-left md:text-right`}>
-            <ScrambleIn text="Find" delay={700} triggered={entranceComplete} />
+            <ScrambleIn text="Hear" delay={700} triggered={entranceComplete} />
             <br />
-            <ScrambleIn text="Your Band" delay={1000} triggered={entranceComplete} />
+            <ScrambleIn text="The Word" delay={1000} triggered={entranceComplete} />
           </h1>
         </div>
       </motion.div>

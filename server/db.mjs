@@ -7,7 +7,7 @@ import { MongoClient } from 'mongodb';
  * module scope and on globalThis — reconnecting per request would exhaust the
  * connection pool under any real traffic.
  */
-export const GAMES = ['ai-human'];
+export const GAMES = ['ai-human', 'cipher-tunes'];
 
 const URI = process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27017';
 const DB_NAME = process.env.MONGODB_DB ?? 'hackclub_nust';

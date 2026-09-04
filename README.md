@@ -5,8 +5,9 @@ Single-page site for the Hack Club NUST games.
 - **AI vs Human** — playable. 15 rounds of prose, code and images. Some rounds hand
   you one artifact and ask who made it; some put two side by side and ask which is
   the model's. Every call is answered with the tell you missed.
-- **A freshers game** — in design. Played at the orientation stall, it decides which
-  interest band a fresher walks away wearing.
+- **Cipher Tunes** — playable. Seven letters, each with its own recorded tune.
+  Learn them on the practice board, then a word plays as one melody and you spell
+  back what you heard.
 
 Players sign in once with name and email; runs land in MongoDB with per-game
 leaderboards.
@@ -205,6 +206,86 @@ Sourcing note: `commons.wikimedia.org` is unreachable from this machine, and pul
 full-size originals gets you rate-limited fast. The route that works is the
 `en.wikipedia.org` API with `iiurlwidth=900`, which returns server-side **thumbnail**
 URLs — smaller, faster, and the access pattern Wikimedia actually asks for.
+
+## Cipher Tunes
+
+Playable. Click **Play Now** on the Cipher Tunes card.
+
+Seven letters — **A G H L M O R** — each have a tune recorded by the club. A word is
+played as those tunes back to back, and the player spells back what they heard.
+
+### The audio pipeline
+
+The raw recordings are ~10 seconds each, which does not survive concatenation: a
+five-letter word would be 50 seconds of audio per listen. Two problems had to be
+solved before the game was playable at all.
+
+**Length.** Every letter is represented in play by a 2.5s **signature**. Rather than
+taking the first few seconds, `scripts/prepare-tunes.py` scores every candidate
+window on how little its pitch content (chroma) resembles the *other* letters, and
+keeps the most distinctive one. On the first seven letters that halved average
+confusability — mean similarity 0.84 → 0.67, worst pair 0.968 → 0.916.
+
+**Loudness.** The raw takes ranged from -16 dB to -45 dB mean, so R was nearly
+inaudible beside O. Everything is normalised to -16 LUFS, which brought the spread
+from 29 dB down to 1.2 dB.
+
+### Adding the rest of the alphabet
+
+Record the new letters, name them `Letter X.mp3`, and run:
+
+```bash
+python3 scripts/prepare-tunes.py "path/to/recordings"
+```
+
+It writes `<L>.mp3` (signature) and `<L>-full.mp3` (whole take) into
+`public/game/tunes/`, prints the distinctiveness score for each, and saves the
+chosen windows to `SOURCE.json`. Then add the letters to `LETTERS` and
+`LETTER_COLOR` in `src/game/tunes/alphabet.ts`, and extend `words.ts`.
+
+**Watch the distinctiveness numbers.** Anything below ~0.1 means that letter sounds
+like one of its neighbours and words containing both will feel unfair.
+
+### The word bank
+
+Constrained to the letters that have tunes. The system dictionary yields 276
+candidates from {A,G,H,L,M,O,R}, but most are unusable at a stall (AAL, AHO, GRA),
+so `words.ts` is hand-picked to 37 words a first-year will recognise on sight.
+`unplayableWords()` guards against a typo shipping a word that cannot be played.
+
+### UX decisions worth keeping
+
+The game is aimed at someone who has never heard the alphabet before, so:
+
+- **Practice first, no timer.** The run cannot start until the player has met the
+  practice board. Full 10s recordings are available there, and only there.
+- **Tap = hear *and* place.** One gesture does both, so comparing "what I heard"
+  against "what I am spelling" is the same action. No modes to learn.
+- **Spelling is allowed during playback**, but tapping stays silent then, so the
+  letter tune never collides with the melody. Waiting out 17 seconds of audio before
+  being allowed to touch anything was the first thing that felt wrong in testing.
+- **The clock starts when the melody ends**, and is generous — 25s plus 8s per
+  letter. A tight clock would punish the listening the game exists to teach.
+- **Slots light up in sync** with the melody, so a player sees which sound maps to
+  which position. That is the teaching mechanism, not the score.
+- **Words get longer** through a run (3,3,4,4,5,5,6) so the first one is winnable.
+
+Scoring: 100 per letter, up to +40% for speed, two free replays then −10% each, −30%
+per revealed letter (max 2), streak bonuses at 3/5/7. Ranks run Perfect Pitch →
+Golden Ear → Tuned In → Getting It → Warming Up → All Ears.
+
+### Files
+
+```
+src/game/tunes/
+  alphabet.ts          letters, asset paths, timing, colours
+  audio.ts             loads/decodes signatures, schedules words on the audio clock
+  words.ts             the curated bank
+  scoring.ts           clocks, points, ranks, run building
+  useCipherTunes.ts    phase machine, timer, guessing, hints
+  components/          practice board, round view, results, slots, loader
+scripts/prepare-tunes.py   raw recordings -> game assets
+```
 
 ## Per-game leaderboards
 

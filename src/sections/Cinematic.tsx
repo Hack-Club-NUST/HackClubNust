@@ -45,11 +45,11 @@ export default function Cinematic() {
           className="max-w-5xl select-none px-6 text-center font-sans text-[22px] font-normal leading-[1.35] tracking-[-0.02em] text-white sm:px-12 sm:text-[30px] md:text-[36px] lg:text-[42px]"
           style={{ transform, opacity }}
         >
-          One question, asked in public: can you still tell the difference? Hack Club NUST is a
+          Two games, one question: can you still tell what you are hearing? Hack Club NUST is a
           student-run build space where members ship real projects in the open. The AI vs Human
-          detector trains your eye on generated text, images and code. The next game is for
-          freshers — play it at the stall and walk away wearing the colour of what you are into.
-          Built by students, for anyone who wants to play.
+          detector trains your eye on generated text, images and code. Cipher Tunes gives seven
+          letters their own recorded tunes, plays you a word as one melody, and asks you to spell
+          it back. Built by students, for anyone who wants to play.
         </motion.p>
       </div>
     </section>

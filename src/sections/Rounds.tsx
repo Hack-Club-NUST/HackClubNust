@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const ROUNDS = [
   { layer: 'Round 1', name: 'Detect' },
-  { layer: 'Round 2', name: 'Sort' },
+  { layer: 'Round 2', name: 'Decode' },
   { layer: 'Round 3', name: 'Rank' },
 ];
 
@@ -30,12 +30,12 @@ export default function Rounds() {
             How A Run Works
           </p>
           <h2 className="mb-10 text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
-            Three rounds. One band.
+            Three rounds. Zero mercy.
           </h2>
           <p className="mx-auto max-w-xl text-[15px] leading-relaxed text-white/75 sm:text-[17px]">
             Round one puts generated work next to human work and asks you to choose. Round two
-            watches what you actually reach for and sorts you into a colour. Round three posts
-            everything to the club leaderboard, where the whole campus can see it.
+            plays you a melody built from letter tunes and asks which word it spells. Round three
+            posts everything to the club leaderboard, where the whole campus can see it.
           </p>
         </motion.div>
 
