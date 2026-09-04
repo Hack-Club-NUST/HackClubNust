@@ -1,4 +1,5 @@
 import type { LeaderboardEntry, Player, Standing } from './types';
+import type { HackPassProgress, HackPassStatus } from './hackpass';
 
 export type GameId = 'ai-human' | 'cipher-tunes';
 
@@ -17,6 +18,17 @@ export interface RunResponse {
   standing: Standing | null;
   leaderboard: LeaderboardEntry[];
   personalBest: number;
+  hackpassProgress: HackPassProgress;
+  hackpass: HackPassStatus | null;
+  hackpassJustIssued: boolean;
+}
+
+export interface SignInResponse {
+  player: Player;
+  standing: Standing | null;
+  hackpassProgress: HackPassProgress;
+  hackpass: HackPassStatus | null;
+  hackpassJustIssued: boolean;
 }
 
 export interface LeaderboardResponse {
@@ -37,10 +49,37 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function registerPlayer(name: string, email: string, game: GameId) {
-  return request<{ player: Player; standing: Standing | null }>('/players', {
+  return request<SignInResponse>('/players', {
     method: 'POST',
     body: JSON.stringify({ name, email, game }),
   });
+}
+
+export function fetchMyHackpass(playerId: string) {
+  return request<{ progress: HackPassProgress; hackpass: HackPassStatus | null }>(
+    `/hackpass/mine?playerId=${encodeURIComponent(playerId)}`
+  );
+}
+
+export interface HackpassLookup {
+  valid: boolean;
+  redeemed?: boolean;
+  redeemedAt?: number | null;
+  issuedAt?: number;
+}
+
+export function lookupHackpass(code: string) {
+  return request<HackpassLookup>(`/hackpass/lookup/${encodeURIComponent(code)}`);
+}
+
+export async function redeemHackpass(code: string, staffKey: string) {
+  const res = await fetch(`/api/hackpass/lookup/${encodeURIComponent(code)}/redeem`, {
+    method: 'POST',
+    headers: { 'x-staff-key': staffKey },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body?.error ?? `Request failed (${res.status})`);
+  return body as { redeemed: boolean; redeemedAt: number };
 }
 
 export function submitRun(payload: RunSubmission) {

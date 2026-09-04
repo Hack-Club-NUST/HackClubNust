@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import HackPassPanel from '../../components/HackPassPanel';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
 import { rankFor, type TuneRoundResult } from '../scoring';
+import type { HackPassProgress, HackPassStatus } from '../../hackpass';
 import type { LeaderboardEntry, Player, Standing } from '../../types';
 
 interface TunesResultsProps {
@@ -14,6 +16,9 @@ interface TunesResultsProps {
   standing: Standing | null;
   busy: boolean;
   error: string | null;
+  hackpassProgress: HackPassProgress | null;
+  hackpass: HackPassStatus | null;
+  hackpassJustIssued: boolean;
   onReplay: () => void;
   onPractice: () => void;
   onClose: () => void;
@@ -43,6 +48,14 @@ export default function TunesResults(p: TunesResultsProps) {
           <span className="text-[14px] text-white">You are top of the Cipher Tunes board.</span>
         </div>
       )}
+
+      <div className="mt-6">
+        <HackPassPanel
+          progress={p.hackpassProgress}
+          hackpass={p.hackpass}
+          justIssued={p.hackpassJustIssued}
+        />
+      </div>
 
       <div className="mt-8 grid grid-cols-3 gap-4">
         {[

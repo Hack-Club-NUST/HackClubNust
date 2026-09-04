@@ -1,12 +1,17 @@
 import express from 'express';
 import { GAMES } from './db.mjs';
+import { WIN_THRESHOLDS, meetsThreshold, scoreExceedsCeiling } from './hackpass.mjs';
 import {
+  getHackpassByCode,
+  getHackpassForPlayer,
   insertRun,
   isPlayerId,
+  issueHackpassIfNew,
   leaderboard,
   playerBest,
   playerExists,
   playerStanding,
+  redeemHackpass,
   totals,
   upsertPlayer,
 } from './repo.mjs';
@@ -37,6 +42,47 @@ export function createApp() {
     }
   };
 
+  /**
+   * Checks a player's best score in each game against WIN_THRESHOLDS and issues a
+   * HackPass the moment both are cleared. Called after every run submission (in
+   * either game) and on sign-in, so a returning player whose bests already
+   * qualify — reached across separate sessions — gets caught up rather than
+   * needing one more run to trigger it.
+   */
+  async function evaluateHackpass(playerId) {
+    const [aiHumanScore, cipherTunesScore] = await Promise.all([
+      playerBest(playerId, 'ai-human'),
+      playerBest(playerId, 'cipher-tunes'),
+    ]);
+    const bests = { 'ai-human': aiHumanScore ?? 0, 'cipher-tunes': cipherTunesScore ?? 0 };
+
+    const progress = {};
+    for (const game of GAMES) {
+      const best = bests[game] ?? 0;
+      progress[game] = { best, threshold: WIN_THRESHOLDS[game], met: meetsThreshold(game, best) };
+    }
+    const qualifies = GAMES.every((g) => progress[g].met);
+
+    let hackpass = await getHackpassForPlayer(playerId);
+    let justIssued = false;
+    if (qualifies && !hackpass) {
+      const result = await issueHackpassIfNew(playerId, {
+        aiHumanScore: bests['ai-human'],
+        cipherTunesScore: bests['cipher-tunes'],
+      });
+      hackpass = result.hackpass;
+      justIssued = result.justIssued;
+    }
+
+    return {
+      progress,
+      hackpass: hackpass
+        ? { code: hackpass.code, issuedAt: hackpass.issuedAt, redeemed: hackpass.redeemed }
+        : null,
+      hackpassJustIssued: justIssued,
+    };
+  }
+
   app.get(
     '/api/health',
     guard(async (_req, res) => {
@@ -58,9 +104,13 @@ export function createApp() {
 
       const game = gameOf(req.body?.game);
       const player = await upsertPlayer({ name, email });
+      const { progress, hackpass, hackpassJustIssued } = await evaluateHackpass(player.id);
       res.json({
         player: { id: player.id, name: player.name },
         standing: await playerStanding(player.id, game),
+        hackpassProgress: progress,
+        hackpass,
+        hackpassJustIssued,
       });
     })
   );
@@ -82,14 +132,21 @@ export function createApp() {
         return bad(res, 'Malformed run payload.');
       if (total === 0 || total > 50 || correct > total)
         return bad(res, 'Run totals out of range.');
+      if (scoreExceedsCeiling(game, score))
+        return bad(res, 'That score is not reachable in this game.');
       if (!(await playerExists(playerId))) return bad(res, 'Unknown player.');
 
       const run = await insertRun({ playerId, game, score, correct, total, maxCombo, rankTitle });
+      const { progress, hackpass, hackpassJustIssued } = await evaluateHackpass(playerId);
+
       res.json({
         run: { id: run.id, score: run.score },
         standing: await playerStanding(playerId, game),
         leaderboard: await leaderboard(game, 10),
         personalBest: (await playerBest(playerId, game)) ?? run.score,
+        hackpassProgress: progress,
+        hackpass,
+        hackpassJustIssued,
       });
     })
   );
@@ -101,6 +158,54 @@ export function createApp() {
       const game = gameOf(req.query.game);
       const entries = await leaderboard(game, limit);
       res.json({ game, entries, champion: entries[0] ?? null, ...(await totals(game)) });
+    })
+  );
+
+  /** A player checking their own status — used on sign-in and on return visits. */
+  app.get(
+    '/api/hackpass/mine',
+    guard(async (req, res) => {
+      const playerId = String(req.query.playerId ?? '');
+      if (!isPlayerId(playerId)) return bad(res, 'Malformed player id.');
+      const { progress, hackpass } = await evaluateHackpass(playerId);
+      res.json({ progress, hackpass });
+    })
+  );
+
+  /**
+   * Public lookup by code — no auth, because holding the code is itself the
+   * proof (same trust model as a paper coupon). Never exposes the player's
+   * email; the name is shown so staff can confirm identity at the counter.
+   */
+  app.get(
+    '/api/hackpass/lookup/:code',
+    guard(async (req, res) => {
+      const pass = await getHackpassByCode(req.params.code);
+      if (!pass) return res.status(404).json({ valid: false });
+      res.json({
+        valid: true,
+        redeemed: pass.redeemed,
+        redeemedAt: pass.redeemedAt,
+        issuedAt: pass.issuedAt,
+      });
+    })
+  );
+
+  /**
+   * Marking a pass redeemed spends real value, so it is gated behind a shared
+   * staff key (HACKPASS_STAFF_KEY) rather than left open next to a public
+   * lookup endpoint.
+   */
+  app.post(
+    '/api/hackpass/lookup/:code/redeem',
+    guard(async (req, res) => {
+      const staffKey = process.env.HACKPASS_STAFF_KEY;
+      if (!staffKey) return res.status(503).json({ error: 'Redemption is not configured yet.' });
+      if (req.get('x-staff-key') !== staffKey) return res.status(401).json({ error: 'Wrong staff key.' });
+
+      const pass = await redeemHackpass(req.params.code);
+      if (!pass) return res.status(409).json({ error: 'Unknown code, or already redeemed.' });
+      res.json({ redeemed: true, redeemedAt: pass.redeemedAt });
     })
   );
 

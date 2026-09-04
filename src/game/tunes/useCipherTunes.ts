@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchLeaderboard, registerPlayer, submitRun } from '../api';
 import { savePlayer } from '../storage';
 import type { LeaderboardEntry, Player, Standing } from '../types';
+import type { HackPassProgress, HackPassStatus } from '../hackpass';
 import { LETTERS, isLetter, type Letter } from './alphabet';
 import { TuneBank } from './audio';
 import { buildRun, limitFor, maxHintsFor, rankFor, scoreRound, type TuneRound, type TuneRoundResult } from './scoring';
@@ -19,6 +20,10 @@ export function useCipherTunes() {
   const [playerCount, setPlayerCount] = useState(0);
   const [apiError, setApiError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const [hackpassProgress, setHackpassProgress] = useState<HackPassProgress | null>(null);
+  const [hackpass, setHackpass] = useState<HackPassStatus | null>(null);
+  const [hackpassJustIssued, setHackpassJustIssued] = useState(false);
 
   const [loadProgress, setLoadProgress] = useState(0);
   const [audioError, setAudioError] = useState<string | null>(null);
@@ -74,10 +79,13 @@ export function useCipherTunes() {
       setBusy(true);
       setApiError(null);
       try {
-        const { player: p, standing: s } = await registerPlayer(name, email, GAME);
-        setPlayer(p);
-        setStanding(s);
-        savePlayer({ id: p.id, name: p.name, email });
+        const signInRes = await registerPlayer(name, email, GAME);
+        setPlayer(signInRes.player);
+        setStanding(signInRes.standing);
+        setHackpassProgress(signInRes.hackpassProgress);
+        setHackpass(signInRes.hackpass);
+        setHackpassJustIssued(signInRes.hackpassJustIssued);
+        savePlayer({ id: signInRes.player.id, name: signInRes.player.name, email });
         setPhase('loading');
         void refreshBoard();
 
@@ -267,6 +275,9 @@ export function useCipherTunes() {
         });
         setBoard(res.leaderboard);
         setStanding(res.standing);
+        setHackpassProgress(res.hackpassProgress);
+        setHackpass(res.hackpass);
+        setHackpassJustIssued(res.hackpassJustIssued);
         setApiError(null);
       } catch (err) {
         setApiError(err instanceof Error ? err.message : 'Could not save your run.');
@@ -307,6 +318,7 @@ export function useCipherTunes() {
   return {
     phase, player, standing, board, playerCount, apiError, busy,
     loadProgress, audioError, ready: bank.ready,
+    hackpassProgress, hackpass, hackpassJustIssued,
     run, index, round, results, lastResult,
     msLeft, limitMs, timerRunning, score, correct, combo, maxCombo,
     guess, replays, hints, revealed,

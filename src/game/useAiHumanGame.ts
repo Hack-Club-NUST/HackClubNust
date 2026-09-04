@@ -12,6 +12,7 @@ import type {
   RoundResult,
   Standing,
 } from './types';
+import type { HackPassProgress, HackPassStatus } from './hackpass';
 
 const TICK_MS = 100;
 
@@ -23,6 +24,10 @@ export function useAiHumanGame() {
   const [playerCount, setPlayerCount] = useState(0);
   const [apiError, setApiError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const [hackpassProgress, setHackpassProgress] = useState<HackPassProgress | null>(null);
+  const [hackpass, setHackpass] = useState<HackPassStatus | null>(null);
+  const [hackpassJustIssued, setHackpassJustIssued] = useState(false);
 
   const [run, setRun] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
@@ -60,10 +65,13 @@ export function useAiHumanGame() {
       setBusy(true);
       setApiError(null);
       try {
-        const { player: p, standing: s } = await registerPlayer(name, email, 'ai-human');
-        setPlayer(p);
-        setStanding(s);
-        savePlayer({ id: p.id, name: p.name, email });
+        const res = await registerPlayer(name, email, 'ai-human');
+        setPlayer(res.player);
+        setStanding(res.standing);
+        setHackpassProgress(res.hackpassProgress);
+        setHackpass(res.hackpass);
+        setHackpassJustIssued(res.hackpassJustIssued);
+        savePlayer({ id: res.player.id, name: res.player.name, email });
         setPhase('intro');
         void refreshBoard();
       } catch (err) {
@@ -142,6 +150,9 @@ export function useAiHumanGame() {
         });
         setBoard(res.leaderboard);
         setStanding(res.standing);
+        setHackpassProgress(res.hackpassProgress);
+        setHackpass(res.hackpass);
+        setHackpassJustIssued(res.hackpassJustIssued);
         setApiError(null);
       } catch (err) {
         setApiError(err instanceof Error ? err.message : 'Could not save your run.');
@@ -188,6 +199,9 @@ export function useAiHumanGame() {
     combo,
     maxCombo,
     remembered: loadPlayer(),
+    hackpassProgress,
+    hackpass,
+    hackpassJustIssued,
     signIn,
     start,
     answer,

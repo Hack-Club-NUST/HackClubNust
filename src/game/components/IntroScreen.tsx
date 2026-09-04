@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
+import HackPassPanel from './HackPassPanel';
 import LeaderboardPanel from './LeaderboardPanel';
 import { ROUNDS_PER_RUN } from '../scoring';
+import type { HackPassStatus } from '../hackpass';
 import type { LeaderboardEntry, Player, Standing } from '../types';
 
 interface IntroScreenProps {
   player: Player | null;
   standing: Standing | null;
   board: LeaderboardEntry[];
+  hackpass: HackPassStatus | null;
   onStart: () => void;
 }
 
@@ -18,7 +21,7 @@ const RULES: Array<[string, string]> = [
   ['05', 'Every call is followed by the tell you should have caught.'],
 ];
 
-export default function IntroScreen({ player, standing, board, onStart }: IntroScreenProps) {
+export default function IntroScreen({ player, standing, board, hackpass, onStart }: IntroScreenProps) {
   return (
     <motion.div
       className="mx-auto flex w-full max-w-2xl flex-col px-6 py-10"
@@ -42,6 +45,12 @@ export default function IntroScreen({ player, standing, board, onStart }: IntroS
           You sit <span className="text-brand">#{standing.position}</span> of {standing.of} with{' '}
           <span className="tabular-nums text-white/70">{standing.best}</span>.
         </p>
+      )}
+
+      {hackpass && (
+        <div className="mt-6">
+          <HackPassPanel progress={null} hackpass={hackpass} compact />
+        </div>
       )}
 
       <ul className="mt-8 flex flex-col gap-3">

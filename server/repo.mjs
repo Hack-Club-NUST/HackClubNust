@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { collections } from './db.mjs';
+import { generateHackpassCode } from './hackpass.mjs';
 
 /**
  * The only module that talks to the database. Everything above it — the API, the
@@ -105,4 +106,78 @@ export async function totals(game) {
     runs.distinct('playerId', { game }),
   ]);
   return { players: distinct.length, runs: count };
+}
+
+
+/* ------------------------------- hackpasses ------------------------------ */
+
+export async function getHackpassForPlayer(playerId) {
+  if (!isId(playerId)) return null;
+  const col = await collections.hackpasses();
+  return col.findOne({ playerId: new ObjectId(playerId) });
+}
+
+export async function getHackpassByCode(code) {
+  const col = await collections.hackpasses();
+  return col.findOne({ code: String(code).toUpperCase() });
+}
+
+/**
+ * Issues a hackpass for a qualifying player, or returns their existing one.
+ * Races (two run submissions clearing the bar at the same instant, or a
+ * generated code colliding with an existing one) are resolved by the two
+ * unique indexes rather than by locking: a duplicate-key error on `playerId`
+ * means someone already has a pass, so we just fetch and return it; a
+ * duplicate on `code` means bad luck on the random draw, so we retry with a
+ * fresh one.
+ */
+export async function issueHackpassIfNew(playerId, snapshot) {
+  const existing = await getHackpassForPlayer(playerId);
+  if (existing) return { hackpass: existing, justIssued: false };
+
+  const col = await collections.hackpasses();
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const doc = {
+      playerId: new ObjectId(playerId),
+      code: generateHackpassCode(),
+      issuedAt: Date.now(),
+      aiHumanScore: snapshot.aiHumanScore,
+      cipherTunesScore: snapshot.cipherTunesScore,
+      redeemed: false,
+      redeemedAt: null,
+    };
+    try {
+      await col.insertOne(doc);
+      return { hackpass: doc, justIssued: true };
+    } catch (err) {
+      if (err?.code !== 11000) throw err;
+      const onPlayerId = JSON.stringify(err?.keyPattern ?? {}).includes('playerId');
+      if (onPlayerId) {
+        const raced = await getHackpassForPlayer(playerId);
+        if (raced) return { hackpass: raced, justIssued: false };
+      }
+      // otherwise a code collision — loop and try a new random code
+    }
+  }
+  throw new Error('Could not allocate a unique hackpass code.');
+}
+
+/** Atomic: fails silently (returns null) if the code is unknown or already used. */
+export async function redeemHackpass(code) {
+  const col = await collections.hackpasses();
+  const result = await col.findOneAndUpdate(
+    { code: String(code).toUpperCase(), redeemed: false },
+    { $set: { redeemed: true, redeemedAt: Date.now() } },
+    { returnDocument: 'after' }
+  );
+  return result?.value ?? result ?? null;
+}
+
+export async function hackpassStats() {
+  const col = await collections.hackpasses();
+  const [issued, redeemed] = await Promise.all([
+    col.countDocuments({}),
+    col.countDocuments({ redeemed: true }),
+  ]);
+  return { issued, redeemed };
 }

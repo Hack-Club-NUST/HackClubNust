@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
+import HackPassPanel from '../../components/HackPassPanel';
 import LeaderboardPanel from '../../components/LeaderboardPanel';
 import AlphabetBoard from './AlphabetBoard';
 import { ROUNDS_PER_RUN } from '../scoring';
+import type { HackPassStatus } from '../../hackpass';
 import type { LeaderboardEntry, Player, Standing } from '../../types';
 import type { Letter } from '../alphabet';
 
@@ -11,13 +13,14 @@ interface PracticeScreenProps {
   board: LeaderboardEntry[];
   previewLetter: Letter | null;
   audioError: string | null;
+  hackpass: HackPassStatus | null;
   onPlayLetter: (letter: Letter) => void;
   onPlayFull: (letter: Letter) => void;
   onStart: () => void;
 }
 
 export default function PracticeScreen({
-  player, standing, board, previewLetter, audioError, onPlayLetter, onPlayFull, onStart,
+  player, standing, board, previewLetter, audioError, hackpass, onPlayLetter, onPlayFull, onStart,
 }: PracticeScreenProps) {
   return (
     <motion.div
@@ -78,6 +81,12 @@ export default function PracticeScreen({
           You sit <span className="text-brand">#{standing.position}</span> of {standing.of} with{' '}
           <span className="tabular-nums text-white/70">{standing.best}</span>.
         </p>
+      )}
+
+      {hackpass && (
+        <div className="mt-6">
+          <HackPassPanel progress={null} hackpass={hackpass} compact />
+        </div>
       )}
 
       <button

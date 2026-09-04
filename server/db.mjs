@@ -41,6 +41,9 @@ async function ensureIndexes(db) {
     db.collection('players').createIndex({ email: 1 }, { unique: true }),
     db.collection('runs').createIndex({ game: 1, score: -1 }),
     db.collection('runs').createIndex({ playerId: 1 }),
+    // one hackpass per player; codes must never collide
+    db.collection('hackpasses').createIndex({ playerId: 1 }, { unique: true }),
+    db.collection('hackpasses').createIndex({ code: 1 }, { unique: true }),
   ]);
 }
 
@@ -52,4 +55,5 @@ export async function getDb() {
 export const collections = {
   players: async () => (await getDb()).collection('players'),
   runs: async () => (await getDb()).collection('runs'),
+  hackpasses: async () => (await getDb()).collection('hackpasses'),
 };

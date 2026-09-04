@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import HackPassPanel from './HackPassPanel';
 import LeaderboardPanel from './LeaderboardPanel';
 import { rankFor } from '../scoring';
+import type { HackPassProgress, HackPassStatus } from '../hackpass';
 import type { LeaderboardEntry, Player, RoundResult, Standing } from '../types';
 
 interface ResultsScreenProps {
@@ -14,6 +16,9 @@ interface ResultsScreenProps {
   standing: Standing | null;
   busy: boolean;
   error: string | null;
+  hackpassProgress: HackPassProgress | null;
+  hackpass: HackPassStatus | null;
+  hackpassJustIssued: boolean;
   onReplay: () => void;
   onClose: () => void;
 }
@@ -29,6 +34,9 @@ export default function ResultsScreen({
   standing,
   busy,
   error,
+  hackpassProgress,
+  hackpass,
+  hackpassJustIssued,
   onReplay,
   onClose,
 }: ResultsScreenProps) {
@@ -79,6 +87,10 @@ export default function ResultsScreen({
           players.
         </p>
       )}
+
+      <div className="mt-6">
+        <HackPassPanel progress={hackpassProgress} hackpass={hackpass} justIssued={hackpassJustIssued} />
+      </div>
 
       {error && (
         <p className="mt-4 rounded-lg border border-amber-400/40 bg-amber-400/[0.07] px-4 py-3 text-[12px] leading-relaxed text-white/70">

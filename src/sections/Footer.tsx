@@ -11,6 +11,8 @@ const SOCIALS = [
   },
 ];
 
+const WHATSAPP_INVITE = 'https://chat.whatsapp.com/CU9yIl3Ok7pDf5niG4D65U';
+
 export default function Footer() {
   return (
     <footer id="club" className="relative flex min-h-[400px] w-full flex-col overflow-hidden bg-ink md:flex-row">
@@ -40,7 +42,17 @@ export default function Footer() {
             games nobody asked for.
           </p>
 
-          <ul className="mt-8 flex flex-col gap-3">
+          <a
+            href={WHATSAPP_INVITE}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-6 inline-flex h-11 items-center gap-2.5 rounded-full bg-brand-grad px-5 text-[13px] font-bold text-white shadow-[0_8px_24px_rgba(235,69,84,0.3)] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <i className="bi bi-whatsapp text-[16px]" aria-hidden="true" />
+            Join our WhatsApp community
+          </a>
+
+          <ul className="mt-6 flex flex-col gap-3">
             {SOCIALS.map((social) => (
               <li key={social.icon}>
                 <a

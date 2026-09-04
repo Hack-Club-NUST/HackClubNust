@@ -129,6 +129,9 @@ api/
 | `POST /api/runs` | records a run, returns standing + fresh leaderboard |
 | `GET /api/leaderboard?game=&limit=` | best run per player, ranked, plus the champion |
 | `GET /api/health` | liveness + per-game row counts |
+| `GET /api/hackpass/mine?playerId=` | a player's own progress + pass, if any |
+| `GET /api/hackpass/lookup/:code` | public — validity + redeemed status, never the email |
+| `POST /api/hackpass/lookup/:code/redeem` | staff-key gated, one-time |
 
 Two collections. `players` is `{ name, email, createdAt }` with a unique index on a
 lowercased email, so `BILAL@` and `bilal@` are one person. `runs` is
@@ -293,6 +296,72 @@ Every run carries a `game` field and every query is scoped to it, so each game g
 an independent board while players are shared — one sign-in covers all of them.
 Adding a game means adding its id to `GAMES` in `server/db.mjs`; an unrecognised id
 falls back to the first entry rather than erroring.
+
+## HackPass
+
+A discount code, earned by clearing a high score bar in **both** games (best
+single run each — the bars are independent, not summed). Redeemable at
+participating cafes.
+
+### The bar
+
+Set by simulating the real scoring code, not guessed. See `server/hackpass.mjs`
+for the full methodology; the short version:
+
+| Game | True ceiling | Bar | What it takes |
+|---|---|---|---|
+| AI vs Human | 11,050 (60k simulated runs) | **7,500** | ~90%+ accuracy and good speed |
+| Cipher Tunes | 5,050 (deterministic — fixed word-length mix every run) | **3,800** | 7/7 words, ~0-1 hints, no dawdling |
+
+Both sit at roughly 70-75% of the true ceiling — reachable by a genuinely sharp,
+attentive player, out of reach for a casual one. There is one completed run in
+the database as of writing this, so treat these as a calibrated starting point
+and revisit once real stall data exists.
+
+### How it is issued
+
+Checked after every run submission (either game) and on sign-in, so a player
+whose bests already qualify — reached across separate sessions — is caught up
+immediately rather than needing one more run to trigger it. One pass per player,
+enforced by a unique index rather than a lock: concurrent qualifying submissions
+race the database, not application logic.
+
+The code is `HACK-XXXXXX`, drawn from an alphabet with no `0/O/1/I/L` — it gets
+read aloud and typed by a barista.
+
+### Redeeming one
+
+`/staff` — a plain pathname check in `App.tsx`, not a router; it is a one-page
+internal tool, not a second app. Enter the shared key (`HACKPASS_STAFF_KEY`) once
+per session, look up a code, confirm it with the player, redeem. Redemption is
+atomic and one-time: a code can't be redeemed twice even under a race, and
+looking up a code never exposes the holder's email.
+
+### The honest limitation
+
+**The API trusts the score the browser reports.** Neither game re-derives round
+outcomes server-side, so a technically inclined user could open devtools and
+submit a fabricated `POST /api/runs` for their own already-registered player.
+`server/hackpass.mjs` closes the blatant version of this — any score above the
+game's true mathematical ceiling is rejected outright — but a plausible forged
+number just under the ceiling would still be accepted. Full protection means the
+server owning round generation and grading, which is a real redesign of both
+game engines, not a quick patch. Worth doing before this scales past a supervised
+club stall; out of scope for this pass.
+
+### Files
+
+```
+server/hackpass.mjs   thresholds, ceilings, code generator (pure, no DB)
+server/repo.mjs       issueHackpassIfNew / redeemHackpass / lookup (the only
+                       module touching the hackpasses collection)
+server/app.mjs        evaluateHackpass() orchestration + the four routes
+src/game/hackpass.ts  client-side mirror of the thresholds, for display only —
+                       the server is the actual authority
+src/game/components/HackPassPanel.tsx   shared by both games' results/intro
+                                         screens: progress bars, or the won state
+src/StaffPage.tsx      the /staff redemption tool
+```
 
 ## Deploying to Vercel
 

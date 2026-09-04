@@ -115,6 +115,7 @@ export default function CipherTunesGame({ open, onClose }: CipherTunesGameProps)
                 board={g.board}
                 previewLetter={g.previewLetter}
                 audioError={g.audioError}
+                hackpass={g.hackpass}
                 onPlayLetter={g.playLetter}
                 onPlayFull={g.playFullTune}
                 onStart={startRun}
@@ -169,6 +170,9 @@ export default function CipherTunesGame({ open, onClose }: CipherTunesGameProps)
                 standing={g.standing}
                 busy={g.busy}
                 error={g.apiError}
+                hackpassProgress={g.hackpassProgress}
+                hackpass={g.hackpass}
+                hackpassJustIssued={g.hackpassJustIssued}
                 onReplay={startRun}
                 onPractice={g.backToPractice}
                 onClose={onClose}

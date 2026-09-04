@@ -114,6 +114,7 @@ export default function AiHumanGame({ open, onClose }: AiHumanGameProps) {
                 player={game.player}
                 standing={game.standing}
                 board={game.board}
+                hackpass={game.hackpass}
                 onStart={start}
               />
             )}
@@ -146,6 +147,9 @@ export default function AiHumanGame({ open, onClose }: AiHumanGameProps) {
                 standing={game.standing}
                 busy={game.busy}
                 error={game.apiError}
+                hackpassProgress={game.hackpassProgress}
+                hackpass={game.hackpass}
+                hackpassJustIssued={game.hackpassJustIssued}
                 onReplay={start}
                 onClose={onClose}
               />
