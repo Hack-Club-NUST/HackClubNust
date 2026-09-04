@@ -4,7 +4,7 @@ import { savePlayer } from '../storage';
 import type { LeaderboardEntry, Player, Standing } from '../types';
 import { LETTERS, isLetter, type Letter } from './alphabet';
 import { TuneBank } from './audio';
-import { buildRun, limitFor, rankFor, scoreRound, type TuneRound, type TuneRoundResult } from './scoring';
+import { buildRun, limitFor, maxHintsFor, rankFor, scoreRound, type TuneRound, type TuneRoundResult } from './scoring';
 
 const TICK_MS = 100;
 const GAME = 'cipher-tunes' as const;
@@ -235,7 +235,7 @@ export function useCipherTunes() {
 
   /** Reveals the first letter the player has not yet got right. */
   const useHint = useCallback(() => {
-    if (!round || hints >= 2) return;
+    if (!round || hints >= maxHintsFor(round)) return;
     const word = round.word;
     for (let i = 0; i < word.length; i++) {
       if (guess[i] !== word[i]) {
@@ -310,6 +310,7 @@ export function useCipherTunes() {
     run, index, round, results, lastResult,
     msLeft, limitMs, timerRunning, score, correct, combo, maxCombo,
     guess, replays, hints, revealed,
+    maxHints: round ? maxHintsFor(round) : 0,
     isPlaying, activeLetterIndex, previewLetter, letters: LETTERS,
     signIn, startRun, playWord, playLetter, playFullTune,
     appendLetter, backspace, clearGuess, useHint, submit, next, reset, backToPractice,

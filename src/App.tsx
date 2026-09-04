@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './sections/Hero';
-import Cinematic from './sections/Cinematic';
-import Metrics from './sections/Metrics';
 import Features from './sections/Features';
 import Games from './sections/Games';
 import Rounds from './sections/Rounds';
@@ -23,8 +21,6 @@ export default function App() {
     >
       <Navbar entranceComplete={entranceComplete} />
       <Hero entranceComplete={entranceComplete} />
-      <Cinematic />
-      <Metrics />
       <Features />
       <Games />
       <Rounds />

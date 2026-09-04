@@ -3,7 +3,7 @@ import TimerBar from '../../components/TimerBar';
 import AlphabetBoard from './AlphabetBoard';
 import WordSlots from './WordSlots';
 import { wordDurationS } from '../alphabet';
-import { FREE_REPLAYS, MAX_HINTS, type TuneRound, type TuneRoundResult } from '../scoring';
+import { FREE_REPLAYS, type TuneRound, type TuneRoundResult } from '../scoring';
 import type { Letter } from '../alphabet';
 
 interface TuneRoundViewProps {
@@ -21,6 +21,7 @@ interface TuneRoundViewProps {
   guess: string;
   replays: number;
   hints: number;
+  maxHints: number;
   revealed: number[];
   isFeedback: boolean;
   lastResult: TuneRoundResult | null;
@@ -114,12 +115,12 @@ export default function TuneRoundView(p: TuneRoundViewProps) {
             <button
               type="button"
               onClick={p.onHint}
-              disabled={p.hints >= MAX_HINTS}
+              disabled={p.hints >= p.maxHints}
               className="flex h-11 items-center justify-center gap-2 rounded-full border border-white/15 px-4 text-[13px] text-white/70 hover:border-amber-400/60 hover:text-white disabled:opacity-30"
             >
               <i className="bi bi-lightbulb" aria-hidden="true" />
               Hint
-              <span className="text-[11px] text-white/30">{MAX_HINTS - p.hints} left</span>
+              <span className="text-[11px] text-white/30">{p.maxHints - p.hints} left</span>
             </button>
           </div>
 

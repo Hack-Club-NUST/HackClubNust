@@ -137,6 +137,7 @@ export default function CipherTunesGame({ open, onClose }: CipherTunesGameProps)
                 guess={guess}
                 replays={g.replays}
                 hints={g.hints}
+                maxHints={g.maxHints}
                 revealed={g.revealed}
                 isFeedback={phase === 'feedback'}
                 lastResult={g.lastResult}

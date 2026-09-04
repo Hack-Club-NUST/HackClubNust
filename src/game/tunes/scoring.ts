@@ -30,7 +30,10 @@ export const FREE_REPLAYS = 2;
 const REPLAY_PENALTY_RATE = 0.1;
 const MAX_REPLAY_PENALTY_RATE = 0.4;
 const HINT_PENALTY_RATE = 0.3;
-export const MAX_HINTS = 2;
+/** Short words give away too much with two reveals, so they only get one. */
+export function maxHintsFor(round: TuneRound): number {
+  return round.word.length > 4 ? 2 : 1;
+}
 
 export const COMBO_BONUS: Record<number, number> = { 3: 100, 5: 250, 7: 500 };
 

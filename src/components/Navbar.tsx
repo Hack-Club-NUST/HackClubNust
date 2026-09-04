@@ -21,7 +21,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
 
   const links = [
     { label: 'Games', target: '#games' },
-    { label: 'Club', target: '#club' },
+    { label: 'Club', target: '#club' },  // the footer carries the club blurb
   ];
 
   return (
@@ -32,7 +32,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
       transition={{ duration: 0.8 }}
     >
       {/* ---------------- desktop ---------------- */}
-      <div className="hidden sm:flex h-20 items-center justify-between px-4 sm:px-6 md:px-8">
+      <div className="hidden sm:flex h-20 items-center px-4 sm:px-6 md:px-8">
         <div className="flex items-center gap-2">
           {/* logo pill */}
           <motion.a
@@ -92,20 +92,6 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </motion.div>
         </div>
 
-        {/* CTA */}
-        <motion.a
-          href="https://hackclub.com/slack/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex h-12 items-center gap-2 rounded-full bg-brand-grad px-6 text-white shadow-[0_8px_30px_rgba(235,69,84,0.35)]"
-          onMouseEnter={() => setHovered('cta')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          <i className="bi bi-slack text-[16px]" aria-hidden="true" />
-          <ScrambleText text="Join Slack" isHovered={hovered === 'cta'} className="text-[15px] font-bold" />
-        </motion.a>
       </div>
 
       {/* ---------------- mobile ---------------- */}
@@ -163,17 +149,6 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </AnimatePresence>
         </motion.div>
 
-        {!menuOpen && (
-          <a
-            href="https://hackclub.com/slack/"
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-brand-grad px-3.5 text-white"
-          >
-            <i className="bi bi-slack text-[13px]" aria-hidden="true" />
-            <span className="text-[13px] font-bold">Join</span>
-          </a>
-        )}
       </div>
     </motion.nav>
   );

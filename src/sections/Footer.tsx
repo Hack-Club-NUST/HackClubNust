@@ -13,7 +13,7 @@ const SOCIALS = [
 
 export default function Footer() {
   return (
-    <footer className="relative flex min-h-[400px] w-full flex-col overflow-hidden bg-ink md:flex-row">
+    <footer id="club" className="relative flex min-h-[400px] w-full flex-col overflow-hidden bg-ink md:flex-row">
       <div className="relative h-[300px] w-full md:h-auto md:w-1/2">
         <video
           src={VIDEOS.footer}
