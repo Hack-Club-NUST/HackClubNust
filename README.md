@@ -310,6 +310,12 @@ function in `api/index.mjs`.
    Vercel integration.
 4. `vercel --prod`, or connect the GitHub repo for automatic deploys.
 
+**If the driver fails with `tlsv1 alert internal error` (SSL alert 80)**, the cluster
+is usually still provisioning rather than misconfigured. A freshly created M0 brings
+its three replica endpoints up one at a time, and the driver needs the set — plain
+`mongosh` and one of the three hosts will connect while the other two still reject.
+It clears itself within a few minutes; retry before changing any settings.
+
 The browser is same-origin with the API in both dev (Vite proxy) and production
 (the rewrite), so there is no CORS layer anywhere.
 
