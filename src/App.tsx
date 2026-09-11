@@ -1,18 +1,30 @@
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './sections/Hero';
-import Features from './sections/Features';
+import About from './sections/About';
+import Programs from './sections/Programs';
+import Chapter from './sections/Chapter';
 import Games from './sections/Games';
-import Rounds from './sections/Rounds';
+import Recruit from './sections/Recruit';
 import Footer from './sections/Footer';
 import StaffPage from './StaffPage';
+import ApplicationsPage from './ApplicationsPage';
 
+/**
+ * Two internal tools live beside the site at fixed paths. A plain pathname
+ * switch rather than a router: three routes, no params, no nesting — a router
+ * would be more machinery than the whole problem. The check happens before any
+ * hook runs, so each branch is its own component with its own hook order.
+ */
 export default function App() {
-  const [entranceComplete, setEntranceComplete] = useState(false);
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/staff') return <StaffPage />;
+  if (path === '/applications') return <ApplicationsPage />;
+  return <Site />;
+}
 
-  // Plain pathname check rather than a router: this is a one-page internal
-  // tool for staff, not a second app.
-  if (window.location.pathname === '/staff') return <StaffPage />;
+function Site() {
+  const [entranceComplete, setEntranceComplete] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => setEntranceComplete(true), 800);
@@ -26,9 +38,11 @@ export default function App() {
     >
       <Navbar entranceComplete={entranceComplete} />
       <Hero entranceComplete={entranceComplete} />
-      <Features />
+      <About />
+      <Programs />
+      <Chapter />
       <Games />
-      <Rounds />
+      <Recruit />
       <Footer />
     </div>
   );

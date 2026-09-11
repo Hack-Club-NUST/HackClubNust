@@ -38,18 +38,30 @@ export default function Games() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.0 }}
         >
-          The Arena
+          Built At The Club
         </motion.p>
 
         <motion.h2
-          className="mb-20 text-center text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white"
+          className="mb-6 text-center text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.0 }}
         >
-          Pick your fight.
+          Play what we made.
         </motion.h2>
+
+        <motion.p
+          className="mx-auto mb-20 max-w-xl text-center text-[14px] leading-relaxed text-white/45 sm:text-[15px]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1.0, delay: 0.15 }}
+        >
+          Both of these started as a club project and ended up on a table at a NUST stall with a
+          queue in front of it. Members wrote the engines, recorded the audio and sourced every
+          image. Source is on GitHub — read it, fork it, break it.
+        </motion.p>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {GAMES.map((game, i) => (

@@ -44,6 +44,10 @@ async function ensureIndexes(db) {
     // one hackpass per player; codes must never collide
     db.collection('hackpasses').createIndex({ playerId: 1 }, { unique: true }),
     db.collection('hackpasses').createIndex({ code: 1 }, { unique: true }),
+    // one application per person per portfolio — a second submit is a correction,
+    // not a new row, and a refreshed form cannot quietly duplicate itself
+    db.collection('applications').createIndex({ email: 1, portfolio: 1 }, { unique: true }),
+    db.collection('applications').createIndex({ createdAt: -1 }),
   ]);
 }
 
@@ -56,4 +60,5 @@ export const collections = {
   players: async () => (await getDb()).collection('players'),
   runs: async () => (await getDb()).collection('runs'),
   hackpasses: async () => (await getDb()).collection('hackpasses'),
+  applications: async () => (await getDb()).collection('applications'),
 };

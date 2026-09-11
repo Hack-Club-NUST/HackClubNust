@@ -20,8 +20,10 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
   };
 
   const links = [
+    { label: 'Club', target: '#club' },
+    { label: 'Programs', target: '#programs' },
     { label: 'Games', target: '#games' },
-    { label: 'Club', target: '#club' },  // the footer carries the club blurb
+    { label: 'Contact', target: '#contact' }, // the footer carries the socials
   ];
 
   return (
@@ -48,7 +50,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           {/* expanding menu pill */}
           <motion.div
             className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
-            animate={{ width: menuOpen ? 290 : 48 }}
+            animate={{ width: menuOpen ? 420 : 48 }}
             transition={pillSpring}
           >
             <button
@@ -92,6 +94,19 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </motion.div>
         </div>
 
+        <div className="flex-1" />
+
+        {/* Recruitment is the page's one real call to action, so it gets the pill. */}
+        <motion.button
+          type="button"
+          onClick={() => scrollTo('#apply')}
+          className="flex h-12 items-center gap-2 rounded-[14px] bg-brand-grad px-5 text-[15px] font-bold text-white shadow-[0_6px_24px_rgba(235,69,84,0.32)]"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+        >
+          <i className="bi bi-person-plus-fill text-[15px]" aria-hidden="true" />
+          Apply
+        </motion.button>
       </div>
 
       {/* ---------------- mobile ---------------- */}
@@ -149,6 +164,16 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
           </AnimatePresence>
         </motion.div>
 
+        {/* collapses away while the menu is expanded, like the logo pill */}
+        <motion.button
+          type="button"
+          onClick={() => scrollTo('#apply')}
+          className="flex h-9 shrink-0 items-center gap-1.5 overflow-hidden rounded-[10px] bg-brand-grad px-3 text-[13px] font-bold text-white"
+          animate={{ width: menuOpen ? 0 : 'auto', opacity: menuOpen ? 0 : 1, paddingLeft: menuOpen ? 0 : 12, paddingRight: menuOpen ? 0 : 12 }}
+          transition={pillSpring}
+        >
+          <span className="whitespace-nowrap">Apply</span>
+        </motion.button>
       </div>
     </motion.nav>
   );

@@ -1,7 +1,21 @@
 import express from 'express';
 import { GAMES } from './db.mjs';
 import { WIN_THRESHOLDS, meetsThreshold, scoreExceedsCeiling } from './hackpass.mjs';
+import { getPrograms } from './programs.mjs';
 import {
+  APPLICATION_STATUSES,
+  PORTFOLIOS,
+  PORTFOLIO_IDS,
+  SCHOOLS,
+  YEARS,
+  recruitmentIsOpen,
+  validateApplication,
+} from './recruitment.mjs';
+import {
+  applicationCounts,
+  listApplications,
+  setApplicationStatus,
+  submitApplication,
   getHackpassByCode,
   getHackpassForPlayer,
   insertRun,
@@ -199,13 +213,104 @@ export function createApp() {
   app.post(
     '/api/hackpass/lookup/:code/redeem',
     guard(async (req, res) => {
-      const staffKey = process.env.HACKPASS_STAFF_KEY;
-      if (!staffKey) return res.status(503).json({ error: 'Redemption is not configured yet.' });
-      if (req.get('x-staff-key') !== staffKey) return res.status(401).json({ error: 'Wrong staff key.' });
+      if (!requireStaff(req, res)) return;
 
       const pass = await redeemHackpass(req.params.code);
       if (!pass) return res.status(409).json({ error: 'Unknown code, or already redeemed.' });
       res.json({ redeemed: true, redeemedAt: pass.redeemedAt });
+    })
+  );
+
+  /**
+   * Hack Club HQ's currently-running programs. Not guarded by `guard` — it
+   * touches no database, and its own fallback already covers HQ being down.
+   */
+  app.get('/api/programs', async (_req, res) => {
+    const { programs, fetchedAt } = await getPrograms();
+    if (!programs) return res.status(503).json({ error: 'Could not reach Hack Club right now.' });
+    res.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=86400');
+    res.json({ programs, fetchedAt });
+  });
+
+  /* ---------------------------- recruitment ---------------------------- */
+
+  /**
+   * The same shared key that gates HackPass redemption also gates the
+   * applications inbox — one key for one team of exec staff. STAFF_KEY is the
+   * name going forward; HACKPASS_STAFF_KEY still works so the deployed
+   * environment keeps running unchanged.
+   */
+  const staffKey = () => process.env.STAFF_KEY ?? process.env.HACKPASS_STAFF_KEY ?? '';
+
+  const requireStaff = (req, res) => {
+    const key = staffKey();
+    if (!key) {
+      res.status(503).json({ error: 'Staff access is not configured yet.' });
+      return false;
+    }
+    if (req.get('x-staff-key') !== key) {
+      res.status(401).json({ error: 'Wrong staff key.' });
+      return false;
+    }
+    return true;
+  };
+
+  /** Public shape of the form: what to render, and whether it is accepting. */
+  app.get('/api/recruitment', (_req, res) => {
+    res.json({ open: recruitmentIsOpen(), portfolios: PORTFOLIOS, schools: SCHOOLS, years: YEARS });
+  });
+
+  /** Applications per portfolio — a count only, never a name or an email. */
+  app.get(
+    '/api/recruitment/counts',
+    guard(async (_req, res) => {
+      res.json(await applicationCounts());
+    })
+  );
+
+  app.post(
+    '/api/applications',
+    guard(async (req, res) => {
+      if (!recruitmentIsOpen())
+        return res.status(403).json({ error: 'Applications are closed right now.' });
+
+      const { value, error } = validateApplication(req.body);
+      if (error) return bad(res, error);
+
+      const { resubmitted } = await submitApplication(value);
+      res.json({ ok: true, portfolio: value.portfolio, resubmitted });
+    })
+  );
+
+  /** The inbox. Carries applicant contact details, so it is staff-key gated. */
+  app.get(
+    '/api/applications',
+    guard(async (req, res) => {
+      if (!requireStaff(req, res)) return;
+
+      const portfolio = PORTFOLIO_IDS.includes(String(req.query.portfolio))
+        ? String(req.query.portfolio)
+        : null;
+      const status = APPLICATION_STATUSES.includes(String(req.query.status))
+        ? String(req.query.status)
+        : null;
+
+      const entries = await listApplications({ portfolio, status, limit: 300 });
+      res.json({ entries, counts: await applicationCounts() });
+    })
+  );
+
+  app.post(
+    '/api/applications/:id/status',
+    guard(async (req, res) => {
+      if (!requireStaff(req, res)) return;
+
+      const status = String(req.body?.status ?? '');
+      if (!APPLICATION_STATUSES.includes(status)) return bad(res, 'Unknown status.');
+
+      const updated = await setApplicationStatus(req.params.id, status);
+      if (!updated) return res.status(404).json({ error: 'No such application.' });
+      res.json(updated);
     })
   );
 

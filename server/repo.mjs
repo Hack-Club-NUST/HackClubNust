@@ -181,3 +181,94 @@ export async function hackpassStats() {
   ]);
   return { issued, redeemed };
 }
+
+
+/* ------------------------------ applications ----------------------------- */
+
+/**
+ * Records an executive application. The unique index on `{ email, portfolio }`
+ * makes a re-submit an update rather than a duplicate row, so an applicant who
+ * fixes a typo and sends the form again corrects their entry instead of
+ * creating a second one. `status` is only ever set on insert, so re-submitting
+ * cannot reset a decision staff have already made.
+ */
+export async function submitApplication(application) {
+  const col = await collections.applications();
+  const now = Date.now();
+
+  const result = await col.findOneAndUpdate(
+    { email: application.email, portfolio: application.portfolio },
+    {
+      $set: {
+        name: application.name,
+        phone: application.phone,
+        school: application.school,
+        year: application.year,
+        link: application.link,
+        why: application.why,
+        experience: application.experience,
+        updatedAt: now,
+      },
+      $setOnInsert: {
+        email: application.email,
+        portfolio: application.portfolio,
+        status: 'new',
+        createdAt: now,
+      },
+    },
+    { upsert: true, returnDocument: 'before' }
+  );
+
+  const before = result?.value ?? result ?? null;
+  return { id: before?._id?.toString() ?? null, resubmitted: Boolean(before?._id) };
+}
+
+/** Staff-side listing. Newest first, optionally narrowed to one portfolio. */
+export async function listApplications({ portfolio, status, limit = 200 } = {}) {
+  const col = await collections.applications();
+  const query = {};
+  if (portfolio) query.portfolio = portfolio;
+  if (status) query.status = status;
+
+  const rows = await col.find(query).sort({ createdAt: -1 }).limit(limit).toArray();
+  return rows.map((row) => ({
+    id: row._id.toString(),
+    name: row.name,
+    email: row.email,
+    phone: row.phone ?? '',
+    school: row.school,
+    year: row.year,
+    portfolio: row.portfolio,
+    link: row.link ?? '',
+    why: row.why,
+    experience: row.experience ?? '',
+    status: row.status ?? 'new',
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt ?? row.createdAt,
+  }));
+}
+
+export async function setApplicationStatus(id, status) {
+  if (!isId(id)) return null;
+  const col = await collections.applications();
+  const result = await col.findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: { status, decidedAt: Date.now() } },
+    { returnDocument: 'after' }
+  );
+  const doc = result?.value ?? result ?? null;
+  return doc ? { id: doc._id.toString(), status: doc.status } : null;
+}
+
+/** Per-portfolio counts. Public — it is a "people are applying" signal, no PII. */
+export async function applicationCounts() {
+  const col = await collections.applications();
+  const rows = await col.aggregate([{ $group: { _id: '$portfolio', n: { $sum: 1 } } }]).toArray();
+  const byPortfolio = {};
+  let total = 0;
+  for (const row of rows) {
+    byPortfolio[row._id] = row.n;
+    total += row.n;
+  }
+  return { total, byPortfolio };
+}

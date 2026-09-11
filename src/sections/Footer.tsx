@@ -15,7 +15,7 @@ const WHATSAPP_INVITE = 'https://chat.whatsapp.com/CU9yIl3Ok7pDf5niG4D65U';
 
 export default function Footer() {
   return (
-    <footer id="club" className="relative flex min-h-[400px] w-full flex-col overflow-hidden bg-ink md:flex-row">
+    <footer id="contact" className="relative flex min-h-[400px] w-full flex-col overflow-hidden bg-ink md:flex-row">
       <div className="relative h-[300px] w-full md:h-auto md:w-1/2">
         <video
           src={VIDEOS.footer}
@@ -38,9 +38,17 @@ export default function Footer() {
           </div>
 
           <p className="max-w-sm text-[14px] leading-relaxed text-white/40 sm:text-[15px]">
-            A student-run hack club at NUST. We build in public, break things on purpose, and ship
-            games nobody asked for.
+            The NUST chapter of Hack Club — a worldwide nonprofit network of student-run coding
+            clubs. We build in public, break things on purpose, and ship things nobody asked for.
           </p>
+
+          <a
+            href="#apply"
+            className="mt-6 inline-flex h-11 items-center gap-2.5 rounded-full border border-white/15 px-5 text-[13px] text-white/70 transition-colors hover:border-brand/60 hover:text-white"
+          >
+            <i className="bi bi-person-plus text-[15px]" aria-hidden="true" />
+            Apply to the exec team
+          </a>
 
           <a
             href={WHATSAPP_INVITE}

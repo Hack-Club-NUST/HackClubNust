@@ -1,6 +1,25 @@
 # Hack Club NUST
 
-Single-page site for the Hack Club NUST games.
+The site for Hack Club NUST — the chapter of [Hack Club](https://hackclub.com) at the
+National University of Sciences and Technology, Islamabad.
+
+One page, in this order:
+
+| Section | What it is |
+|---|---|
+| Hero | mouse-scrubbed video, the club's line, the two CTAs |
+| About | what Hack Club is, its published numbers, its stated beliefs |
+| Programs | HQ's standing infrastructure + **whatever HQ is running today, fetched live** |
+| Chapter | what a semester here looks like, and what we have already run |
+| Games | the two games the club built, playable in place |
+| Recruit | **executive recruitment** — four portfolios, and the application form |
+| Footer | socials, WhatsApp, contact |
+
+Plus two internal tools at fixed paths: `/staff` (HackPass redemption desk) and
+`/applications` (the exec team's applications inbox). Both are gated by one shared
+staff key.
+
+### The games
 
 - **AI vs Human** — playable. 15 rounds of prose, code and images. Some rounds hand
   you one artifact and ask who made it; some put two side by side and ask which is
@@ -41,21 +60,25 @@ npm run build    # typecheck + production bundle
 
 ```
 src/
+  App.tsx             pathname switch: /staff, /applications, or the site
   components/
     HackClubLogo.tsx    the club "</>" mark, stroked so it inherits currentColor
-    Navbar.tsx          expanding glass pill menu + Join Slack CTA
+    Navbar.tsx          expanding glass pill menu + Apply CTA
     ScrambleIn.tsx      entrance reveal (0.5 chars/frame, 25ms)
     ScrambleText.tsx    hover scramble (4 frames/char, 25ms)
     SquashHamburger.tsx spring-animated 3-bar hamburger
   sections/
     Hero.tsx        mouse-scrubbed video, watermark, scramble headings
-    Cinematic.tsx   scroll-driven 3D rotated paragraph
-    Metrics.tsx     club numbers
-    Features.tsx    "Two Games. One Arena." + feature grid
+    About.tsx       what Hack Club is; numbers and beliefs, as HQ publishes them
+    Programs.tsx    HQ's permanent programs + the live list from /api/programs
+    Chapter.tsx     brand-gradient "a semester here" + the chapter's track record
     Games.tsx       the two game cards  <-- game entry points live here
-    Rounds.tsx      brand-gradient "how a run works"
+    Recruit.tsx     portfolio picker + application form
     Footer.tsx      video panel + socials
-  videos.ts         the five CloudFront background clips
+  recruitment.ts    client half of recruitment: types, portfolio detail, API calls
+  ApplicationsPage.tsx  the exec team's inbox at /applications
+  StaffPage.tsx         the HackPass desk at /staff
+  videos.ts         the CloudFront background clips
 ```
 
 ## The AI vs Human game
@@ -363,14 +386,88 @@ src/game/components/HackPassPanel.tsx   shared by both games' results/intro
 src/StaffPage.tsx      the /staff redemption tool
 ```
 
+## Executive recruitment
+
+Students pick one of four portfolios — **Tech, Media, HR, Event Management** — and
+apply from the page. No CV upload, no third-party form, no mailbox to check.
+
+The server owns everything the form renders. `GET /api/recruitment` returns the
+portfolio list, the NUST school list, the year list and an `open` flag, so closing
+applications or adding a portfolio is a change to `server/recruitment.mjs` alone —
+the client has no copy of any of it to drift from.
+
+| Route | Does | Auth |
+|---|---|---|
+| `GET /api/recruitment` | form config + open/closed | public |
+| `GET /api/recruitment/counts` | applications per portfolio, counts only | public |
+| `POST /api/applications` | submit (or correct) an application | public |
+| `GET /api/applications` | the inbox, with contact details | staff key |
+| `POST /api/applications/:id/status` | new / shortlisted / accepted / rejected | staff key |
+
+**Closing applications without a redeploy:** set `RECRUITMENT_CLOSED=1`. The badge
+flips, the cards disable, and `POST /api/applications` answers 403 — so a saved
+form in somebody's tab cannot sneak one in after the cutoff.
+
+### Re-submitting is an edit, not a duplicate
+
+`applications` has a unique index on `{ email, portfolio }` and the write is an
+upsert. Somebody who fixes a typo and sends the form again corrects their own row
+instead of creating a second one, and a double-tapped submit button cannot produce
+two applications. `status` is `$setOnInsert` only, so a re-submit can never reset a
+decision staff have already made. Applying to a *second* portfolio is a different
+key, so that still works — deliberately.
+
+### The inbox
+
+`/applications` — the same shared staff key as the HackPass desk, read from the
+same `sessionStorage` entry, so moving between the two tools does not ask for it
+twice. Filter by portfolio, expand a row for the full answers and contact details,
+set a status, or export the current filter to CSV. Status changes are optimistic
+and roll back if the write fails.
+
+`STAFF_KEY` is the env var going forward; `HACKPASS_STAFF_KEY` is still honoured so
+the deployed environment keeps working unchanged.
+
+## The live programs list
+
+Hack Club's global programs are short "You Ship, We Ship" campaigns that start and
+end constantly — 34 were open the day this was written, and a hardcoded list would
+carry dead links to HQ within a fortnight. So `server/programs.mjs` reads them from
+HQ's own events API (`hackclub.com/api/v1/events`) and `GET /api/programs` serves
+them.
+
+It is fetched **server-side**, not from the browser: hackclub.com sets no CORS
+header worth relying on, and one warm serverless container can share a single
+cached response across every visitor rather than sending each of them to HQ. The
+cache is an hour; on a timeout or an HQ outage it serves the last good list however
+stale, and the section's hardcoded half (Slack, HCB, Jams, Hackatime, Scrapbook,
+the hackathons directory — the things that do not move) carries it if there has
+never been one.
+
+Entries with no description are dropped: HQ leaves placeholders in the feed, and a
+card with a bare name and nothing under it reads as broken.
+
+### On accuracy
+
+Hack Club HQ scopes most of its ship-a-project programs to makers aged **13–18**;
+only HCB and Hackatime are stated as all-ages. NUST is a university. The Programs
+section says exactly that rather than implying members here can claim HQ prizes —
+an inaccuracy our own members would catch in a week. Keep that line honest if the
+copy is rewritten.
+
+Hack Club's brand rules also require the name be written **Hack Club**, never
+"Hackclub" — including the hero watermark.
+
 ## Deploying to Vercel
 
 `vercel.json` builds the Vite app to `dist` and rewrites `/api/*` to the single
 function in `api/index.mjs`.
 
 1. Create a MongoDB Atlas cluster (the free tier is plenty for a club).
-2. In the Vercel project, set `MONGODB_URI` and `MONGODB_DB`. Never commit these —
-   `.env*` is gitignored and `.env.example` holds only localhost defaults.
+2. In the Vercel project, set `MONGODB_URI`, `MONGODB_DB` and `STAFF_KEY` (the
+   shared key for `/staff` and `/applications`). Optionally `RECRUITMENT_CLOSED=1`
+   to close applications. Never commit these — `.env*` is gitignored and
+   `.env.example` holds only localhost defaults.
 3. Allow Vercel's egress in Atlas. Serverless functions do not have fixed IPs, so
    either allow `0.0.0.0/0` with a strong password or put the cluster behind a
    Vercel integration.

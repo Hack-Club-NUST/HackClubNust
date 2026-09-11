@@ -129,7 +129,7 @@ export default function Hero({ entranceComplete }: HeroProps) {
           className="whitespace-nowrap uppercase leading-none"
           style={{
             fontFamily: '"Anton SC", sans-serif',
-            fontSize: 'clamp(120px, 30vw, 521px)',
+            fontSize: 'clamp(90px, 23vw, 400px)',
             letterSpacing: '-4px',
             backgroundImage:
               'radial-gradient(circle, rgba(242,98,81,0) 0%, #EB4554 70%)',
@@ -138,7 +138,7 @@ export default function Hero({ entranceComplete }: HeroProps) {
             color: 'transparent',
           }}
         >
-          Hackclub
+          Hack Club
         </span>
       </div>
 
@@ -154,27 +154,48 @@ export default function Hero({ entranceComplete }: HeroProps) {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-4">
             <h1 className={headingClass}>
-              <ScrambleIn text="Human" delay={200} triggered={entranceComplete} />
+              <ScrambleIn text="Build" delay={200} triggered={entranceComplete} />
               <br />
-              <ScrambleIn text="Or Machine" delay={500} triggered={entranceComplete} />
+              <ScrambleIn text="In Public" delay={500} triggered={entranceComplete} />
             </h1>
 
             <motion.p
-              className="max-w-sm text-[13px] leading-relaxed text-white/60 sm:text-[15px]"
+              className="max-w-md text-[13px] leading-relaxed text-white/60 sm:text-[15px]"
               initial={{ opacity: 0, y: 25 }}
               animate={entranceComplete ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.2 }}
             >
-              Hack Club NUST builds games worth queuing for. One puts your instincts against the
-              machine: human work or model output, you make the call. The other hands you seven
-              tunes for seven letters and plays you a word.
+              The NUST chapter of Hack Club — a worldwide nonprofit network of student-run coding
+              clubs. Weekly build sessions, workshops, hackathons, and whatever the club decides
+              to make next. No experience asked for.
             </motion.p>
+
+            <motion.div
+              className="mt-2 flex flex-wrap items-center gap-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={entranceComplete ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.45 }}
+            >
+              <a
+                href="#apply"
+                className="flex h-12 items-center gap-2 rounded-full bg-brand-grad px-6 text-[13.5px] font-bold text-white shadow-[0_8px_30px_rgba(235,69,84,0.32)] transition-transform hover:scale-[1.03] active:scale-[0.98]"
+              >
+                <i className="bi bi-person-plus-fill text-[15px]" aria-hidden="true" />
+                Apply to the exec team
+              </a>
+              <a
+                href="#club"
+                className="flex h-12 items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-6 text-[13.5px] text-white/80 backdrop-blur-md transition-colors hover:border-white/45 hover:text-white"
+              >
+                What is Hack Club?
+              </a>
+            </motion.div>
           </div>
 
           <h1 className={`${headingClass} text-left md:text-right`}>
-            <ScrambleIn text="Hear" delay={700} triggered={entranceComplete} />
+            <ScrambleIn text="Ship" delay={700} triggered={entranceComplete} />
             <br />
-            <ScrambleIn text="The Word" delay={1000} triggered={entranceComplete} />
+            <ScrambleIn text="Anyway" delay={1000} triggered={entranceComplete} />
           </h1>
         </div>
       </motion.div>
