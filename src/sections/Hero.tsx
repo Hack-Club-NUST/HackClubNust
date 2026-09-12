@@ -5,6 +5,13 @@ import { VIDEOS } from '../videos';
 
 const SENSITIVITY = 0.8;
 
+/* The clip is never played, so nothing ever forces the browser to decode a
+   frame — and assigning `currentTime = 0` when it is already 0 is a no-op that
+   fires no `seeked` and paints nothing. So the first seek is to a small
+   non-zero time instead: enough to guarantee a decoded frame on the screen,
+   small enough that it is visually frame zero. */
+const PRIME_TIME = 0.04;
+
 interface HeroProps {
   entranceComplete: boolean;
 }
@@ -24,10 +31,27 @@ export default function Hero({ entranceComplete }: HeroProps) {
 
     const onLoadedMetadata = () => {
       video.pause();
+      // Keep the scrub origin and the primed frame identical, so the first
+      // pointer movement continues from here instead of jumping.
+      targetTime.current = PRIME_TIME;
       try {
-        video.currentTime = 0;
+        video.currentTime = PRIME_TIME;
       } catch {
-        /* some browsers reject a seek before the buffer is ready */
+        /* some browsers reject a seek before the buffer is ready; `canplay`
+           below runs the same priming again once it is */
+      }
+    };
+
+    /* Safety net for the browsers that refuse the seek above: by `canplay`
+       there is definitely a decodable frame, so prime once more if the element
+       is still sitting at zero. */
+    const onCanPlay = () => {
+      if (video.currentTime > 0) return;
+      targetTime.current = PRIME_TIME;
+      try {
+        video.currentTime = PRIME_TIME;
+      } catch {
+        /* out of options — the poster stays up, which is the point of it */
       }
     };
 
@@ -79,6 +103,7 @@ export default function Hero({ entranceComplete }: HeroProps) {
     };
 
     video.addEventListener('loadedmetadata', onLoadedMetadata);
+    video.addEventListener('canplay', onCanPlay);
     video.addEventListener('seeked', onSeeked);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('touchmove', onTouchMove, { passive: true });
@@ -86,6 +111,7 @@ export default function Hero({ entranceComplete }: HeroProps) {
 
     return () => {
       video.removeEventListener('loadedmetadata', onLoadedMetadata);
+      video.removeEventListener('canplay', onCanPlay);
       video.removeEventListener('seeked', onSeeked);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('touchmove', onTouchMove);
@@ -98,12 +124,18 @@ export default function Hero({ entranceComplete }: HeroProps) {
 
   return (
     <section id="top" className="relative w-full h-screen-dvh overflow-hidden">
+      {/* The poster is frame zero of the same clip, 86 KB against the video's
+          5.3 MB. It is what stands in for the character while those megabytes
+          arrive, and what stays up if they never do — without it the hero is an
+          empty black box on a slow connection or a blocked video. */}
       <video
         ref={videoRef}
         src={VIDEOS.hero}
+        poster="/hero-poster.jpg"
         muted
         playsInline
         preload="auto"
+        aria-label="Hack Club NUST mascot"
         className="absolute inset-0 h-full w-full object-cover"
       />
 
