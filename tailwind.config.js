@@ -21,6 +21,22 @@ export default {
       backgroundImage: {
         'brand-grad': 'linear-gradient(135deg, #F26251 0%, #EB4554 100%)',
       },
+      keyframes: {
+        // the glow under the announcement bar, breathing
+        glow: {
+          '0%, 100%': { opacity: '0.35' },
+          '50%': { opacity: '1' },
+        },
+        // sweeps across in the first 60%, then rests off-screen until the next pass
+        sheen: {
+          '0%': { transform: 'translateX(-120%) skewX(-12deg)' },
+          '60%, 100%': { transform: 'translateX(320%) skewX(-12deg)' },
+        },
+      },
+      animation: {
+        glow: 'glow 2.4s ease-in-out infinite',
+        sheen: 'sheen 4.5s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

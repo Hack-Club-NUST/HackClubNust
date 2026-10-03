@@ -185,43 +185,8 @@ export async function hackpassStats() {
 
 /* ------------------------------ applications ----------------------------- */
 
-/**
- * Records an executive application. The unique index on `{ email, portfolio }`
- * makes a re-submit an update rather than a duplicate row, so an applicant who
- * fixes a typo and sends the form again corrects their entry instead of
- * creating a second one. `status` is only ever set on insert, so re-submitting
- * cannot reset a decision staff have already made.
- */
-export async function submitApplication(application) {
-  const col = await collections.applications();
-  const now = Date.now();
-
-  const result = await col.findOneAndUpdate(
-    { email: application.email, portfolio: application.portfolio },
-    {
-      $set: {
-        name: application.name,
-        phone: application.phone,
-        school: application.school,
-        year: application.year,
-        link: application.link,
-        why: application.why,
-        experience: application.experience,
-        updatedAt: now,
-      },
-      $setOnInsert: {
-        email: application.email,
-        portfolio: application.portfolio,
-        status: 'new',
-        createdAt: now,
-      },
-    },
-    { upsert: true, returnDocument: 'before' }
-  );
-
-  const before = result?.value ?? result ?? null;
-  return { id: before?._id?.toString() ?? null, resubmitted: Boolean(before?._id) };
-}
+/* Recruitment is closed, so nothing writes a new application any more — these
+   read and annotate the ones received while it was open. */
 
 /** Staff-side listing. Newest first, optionally narrowed to one portfolio. */
 export async function listApplications({ portfolio, status, limit = 200 } = {}) {
@@ -260,7 +225,7 @@ export async function setApplicationStatus(id, status) {
   return doc ? { id: doc._id.toString(), status: doc.status } : null;
 }
 
-/** Per-portfolio counts. Public — it is a "people are applying" signal, no PII. */
+/** Per-portfolio counts, for the inbox's filter chips. */
 export async function applicationCounts() {
   const col = await collections.applications();
   const rows = await col.aggregate([{ $group: { _id: '$portfolio', n: { $sum: 1 } } }]).toArray();

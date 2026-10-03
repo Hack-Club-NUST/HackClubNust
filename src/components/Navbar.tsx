@@ -3,14 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HackClubLogo from './HackClubLogo';
 import ScrambleText from './ScrambleText';
 import SquashHamburger from './SquashHamburger';
+import { WHATSAPP_INVITE } from '../links';
 
 const pillSpring = { type: 'spring' as const, stiffness: 350, damping: 28 };
 
 interface NavbarProps {
   entranceComplete: boolean;
+  /** True while the announcement bar is up, so the pills sit below it. */
+  offset?: boolean;
 }
 
-export default function Navbar({ entranceComplete }: NavbarProps) {
+export default function Navbar({ entranceComplete, offset = false }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -28,7 +31,7 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
 
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 h-20 w-full bg-transparent"
+      className={`fixed left-0 right-0 z-50 h-20 w-full bg-transparent ${offset ? 'top-14 md:top-16' : 'top-0'}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: entranceComplete ? 1 : 0 }}
       transition={{ duration: 0.8 }}
@@ -96,17 +99,18 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
 
         <div className="flex-1" />
 
-        {/* Recruitment is the page's one real call to action, so it gets the pill. */}
-        <motion.button
-          type="button"
-          onClick={() => scrollTo('#apply')}
+        {/* Joining the community is the page's one real call to action, so it gets the pill. */}
+        <motion.a
+          href={WHATSAPP_INVITE}
+          target="_blank"
+          rel="noreferrer"
           className="flex h-12 items-center gap-2 rounded-[14px] bg-brand-grad px-5 text-[15px] font-bold text-white shadow-[0_6px_24px_rgba(235,69,84,0.32)]"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
         >
-          <i className="bi bi-person-plus-fill text-[15px]" aria-hidden="true" />
-          Apply
-        </motion.button>
+          <i className="bi bi-whatsapp text-[15px]" aria-hidden="true" />
+          Join
+        </motion.a>
       </div>
 
       {/* ---------------- mobile ---------------- */}
@@ -165,15 +169,16 @@ export default function Navbar({ entranceComplete }: NavbarProps) {
         </motion.div>
 
         {/* collapses away while the menu is expanded, like the logo pill */}
-        <motion.button
-          type="button"
-          onClick={() => scrollTo('#apply')}
+        <motion.a
+          href={WHATSAPP_INVITE}
+          target="_blank"
+          rel="noreferrer"
           className="flex h-9 shrink-0 items-center gap-1.5 overflow-hidden rounded-[10px] bg-brand-grad px-3 text-[13px] font-bold text-white"
           animate={{ width: menuOpen ? 0 : 'auto', opacity: menuOpen ? 0 : 1, paddingLeft: menuOpen ? 0 : 12, paddingRight: menuOpen ? 0 : 12 }}
           transition={pillSpring}
         >
-          <span className="whitespace-nowrap">Apply</span>
-        </motion.button>
+          <span className="whitespace-nowrap">Join</span>
+        </motion.a>
       </div>
     </motion.nav>
   );

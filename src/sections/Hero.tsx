@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ScrambleIn from '../components/ScrambleIn';
 import { VIDEOS } from '../videos';
+import { WHATSAPP_INVITE } from '../links';
 
 const SENSITIVITY = 0.8;
 
@@ -209,11 +210,13 @@ export default function Hero({ entranceComplete }: HeroProps) {
               transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.45 }}
             >
               <a
-                href="#apply"
+                href={WHATSAPP_INVITE}
+                target="_blank"
+                rel="noreferrer"
                 className="flex h-12 items-center gap-2 rounded-full bg-brand-grad px-6 text-[13.5px] font-bold text-white shadow-[0_8px_30px_rgba(235,69,84,0.32)] transition-transform hover:scale-[1.03] active:scale-[0.98]"
               >
-                <i className="bi bi-person-plus-fill text-[15px]" aria-hidden="true" />
-                Apply to the exec team
+                <i className="bi bi-whatsapp text-[15px]" aria-hidden="true" />
+                Join the WhatsApp community
               </a>
               <a
                 href="#club"

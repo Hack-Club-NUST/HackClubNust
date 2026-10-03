@@ -2,20 +2,11 @@ import express from 'express';
 import { GAMES } from './db.mjs';
 import { WIN_THRESHOLDS, meetsThreshold, scoreExceedsCeiling } from './hackpass.mjs';
 import { getPrograms } from './programs.mjs';
-import {
-  APPLICATION_STATUSES,
-  PORTFOLIOS,
-  PORTFOLIO_IDS,
-  SCHOOLS,
-  YEARS,
-  recruitmentIsOpen,
-  validateApplication,
-} from './recruitment.mjs';
+import { APPLICATION_STATUSES, PORTFOLIO_IDS } from './recruitment.mjs';
 import {
   applicationCounts,
   listApplications,
   setApplicationStatus,
-  submitApplication,
   getHackpassByCode,
   getHackpassForPlayer,
   insertRun,
@@ -232,7 +223,7 @@ export function createApp() {
     res.json({ programs, fetchedAt });
   });
 
-  /* ---------------------------- recruitment ---------------------------- */
+  /* ------------------------- applications inbox ------------------------- */
 
   /**
    * The same shared key that gates HackPass redemption also gates the
@@ -255,34 +246,12 @@ export function createApp() {
     return true;
   };
 
-  /** Public shape of the form: what to render, and whether it is accepting. */
-  app.get('/api/recruitment', (_req, res) => {
-    res.json({ open: recruitmentIsOpen(), portfolios: PORTFOLIOS, schools: SCHOOLS, years: YEARS });
-  });
-
-  /** Applications per portfolio — a count only, never a name or an email. */
-  app.get(
-    '/api/recruitment/counts',
-    guard(async (_req, res) => {
-      res.json(await applicationCounts());
-    })
-  );
-
-  app.post(
-    '/api/applications',
-    guard(async (req, res) => {
-      if (!recruitmentIsOpen())
-        return res.status(403).json({ error: 'Applications are closed right now.' });
-
-      const { value, error } = validateApplication(req.body);
-      if (error) return bad(res, error);
-
-      const { resubmitted } = await submitApplication(value);
-      res.json({ ok: true, portfolio: value.portfolio, resubmitted });
-    })
-  );
-
-  /** The inbox. Carries applicant contact details, so it is staff-key gated. */
+  /**
+   * Recruitment is closed for this tenure: there is no route that accepts an
+   * application any more, only these two for staff to work through the ones
+   * already received. The inbox carries applicant contact details, so it is
+   * staff-key gated.
+   */
   app.get(
     '/api/applications',
     guard(async (req, res) => {
