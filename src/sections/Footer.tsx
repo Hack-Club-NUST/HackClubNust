@@ -1,5 +1,6 @@
 import HackClubLogo from '../components/HackClubLogo';
 import { VIDEOS } from '../videos';
+import { WHATSAPP_INVITE } from '../links';
 
 const SOCIALS = [
   { icon: 'bi-facebook', handle: 'hackclub.nust', href: 'https://facebook.com/hackclub.nust' },
@@ -10,8 +11,6 @@ const SOCIALS = [
     href: 'https://linkedin.com/company/hackclub-nust',
   },
 ];
-
-const WHATSAPP_INVITE = 'https://chat.whatsapp.com/CU9yIl3Ok7pDf5niG4D65U';
 
 export default function Footer() {
   return (
@@ -41,14 +40,6 @@ export default function Footer() {
             The NUST chapter of Hack Club — a worldwide nonprofit network of student-run coding
             clubs. We build in public, break things on purpose, and ship things nobody asked for.
           </p>
-
-          <a
-            href="#apply"
-            className="mt-6 inline-flex h-11 items-center gap-2.5 rounded-full border border-white/15 px-5 text-[13px] text-white/70 transition-colors hover:border-brand/60 hover:text-white"
-          >
-            <i className="bi bi-person-plus text-[15px]" aria-hidden="true" />
-            Apply to the exec team
-          </a>
 
           <a
             href={WHATSAPP_INVITE}

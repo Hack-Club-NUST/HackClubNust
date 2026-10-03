@@ -7,17 +7,17 @@ One page, in this order:
 
 | Section | What it is |
 |---|---|
+| Announcement bar | the orientation headline — a red flip board with a live countdown |
 | Hero | mouse-scrubbed video, the club's line, the two CTAs |
 | About | what Hack Club is, its published numbers, its stated beliefs |
 | Programs | HQ's standing infrastructure + **whatever HQ is running today, fetched live** |
 | Chapter | what a semester here looks like, and what we have already run |
 | Games | the two games the club built, playable in place |
-| Recruit | **executive recruitment** — four portfolios, and the application form |
 | Footer | socials, WhatsApp, contact |
 
 Plus two internal tools at fixed paths: `/staff` (HackPass redemption desk) and
-`/applications` (the exec team's applications inbox). Both are gated by one shared
-staff key.
+`/applications` (the exec team's inbox of the applications received before
+recruitment closed). Both are gated by one shared staff key.
 
 ### The games
 
@@ -62,8 +62,9 @@ npm run build    # typecheck + production bundle
 src/
   App.tsx             pathname switch: /staff, /applications, or the site
   components/
+    AnnouncementBar.tsx the orientation flip board + countdown, pinned above the navbar
     HackClubLogo.tsx    the club "</>" mark, stroked so it inherits currentColor
-    Navbar.tsx          expanding glass pill menu + Apply CTA
+    Navbar.tsx          expanding glass pill menu + Join CTA
     ScrambleIn.tsx      entrance reveal (0.5 chars/frame, 25ms)
     ScrambleText.tsx    hover scramble (4 frames/char, 25ms)
     SquashHamburger.tsx spring-animated 3-bar hamburger
@@ -73,9 +74,10 @@ src/
     Programs.tsx    HQ's permanent programs + the live list from /api/programs
     Chapter.tsx     brand-gradient "a semester here" + the chapter's track record
     Games.tsx       the two game cards  <-- game entry points live here
-    Recruit.tsx     portfolio picker + application form
     Footer.tsx      video panel + socials
-  recruitment.ts    client half of recruitment: types, portfolio detail, API calls
+  recruitment.ts    client half of the applications inbox: types + API calls
+  orientation.ts    the orientation dates the announcement bar counts down to
+  links.ts          the WhatsApp community invite
   ApplicationsPage.tsx  the exec team's inbox at /applications
   StaffPage.tsx         the HackPass desk at /staff
   videos.ts         the CloudFront background clips
@@ -386,40 +388,54 @@ src/game/components/HackPassPanel.tsx   shared by both games' results/intro
 src/StaffPage.tsx      the /staff redemption tool
 ```
 
-## Executive recruitment
+## The announcement bar
 
-Students pick one of four portfolios — **Tech, Media, HR, Event Management** — and
-apply from the page. No CV upload, no third-party form, no mailbox to check.
+One solid red bar pinned above the navbar (56px on a phone, 64px from `md` up)
+for **Orientation 26–27** (6 October 2026). It carries three things and nothing
+else: the headline, the date, and a live countdown. It is display only — nothing
+to click.
 
-The server owns everything the form renders. `GET /api/recruitment` returns the
-portfolio list, the NUST school list, the year list and an `open` flag, so closing
-applications or adding a portfolio is a change to `server/recruitment.mjs` alone —
-the client has no copy of any of it to drift from.
+There is too little text to scroll, so it works like a departure board instead:
+
+- **Flip slot.** The headline and the date share one slot and flip over every
+  2.5s. Showing one at a time is what lets the type be this big on a phone. An
+  invisible copy of the longest message holds the slot's width, so nothing
+  shifts — keep the longest first in `MESSAGES`.
+- **Rolling digits.** Each countdown digit rolls up as it changes, so the seconds
+  move every second.
+- **Glow, sheen, live dot.** A glow breathes under the bar (`glow` in
+  `tailwind.config.js`), a sheen crosses it every few seconds, and the dot pings.
+- **Hover pops it out.** The bar grows 12px, the content scales up and the glow
+  swells, on the navbar's pill spring. 12px keeps it clear of the navbar pills.
+
+The headline and date are in Anton SC — the hero watermark's font — because it
+is condensed enough to go large; the countdown stays in Space Mono so its digits
+do not change width. `prefers-reduced-motion` swaps the flip and the roll for
+plain fades and turns the glow, sheen and ping off.
+
+- **Dates** live in `src/orientation.ts`, in Pakistan time. No start time has been
+  announced, so the countdown runs to the start of the day; set
+  `ORIENTATION_STARTS_AT` to the real time once there is one.
+- **It takes itself down.** Past `ORIENTATION_ENDS_AT` the bar stops rendering and
+  the navbar moves back to the top, so nobody has to remember to remove it.
+- It sits at `z-[60]` — above the navbar, below the game overlays, which cover it.
+
+To reuse it for the next event: change the two dates, and `MESSAGES` in
+`src/components/AnnouncementBar.tsx`.
+
+## Applications inbox (recruitment closed)
+
+Executive recruitment for this tenure is over. The Recruit section, the form and
+every route that accepted an application are gone; what remains is the staff side,
+so the exec team can still work through what was received. Nothing in the
+`applications` collection was deleted.
 
 | Route | Does | Auth |
 |---|---|---|
-| `GET /api/recruitment` | form config + open/closed | public |
-| `GET /api/recruitment/counts` | applications per portfolio, counts only | public |
-| `POST /api/applications` | submit (or correct) an application | public |
 | `GET /api/applications` | the inbox, with contact details | staff key |
 | `POST /api/applications/:id/status` | new / shortlisted / accepted / rejected | staff key |
 
-**Closing applications without a redeploy:** set `RECRUITMENT_CLOSED=1`. The badge
-flips, the cards disable, and `POST /api/applications` answers 403 — so a saved
-form in somebody's tab cannot sneak one in after the cutoff.
-
-### Re-submitting is an edit, not a duplicate
-
-`applications` has a unique index on `{ email, portfolio }` and the write is an
-upsert. Somebody who fixes a typo and sends the form again corrects their own row
-instead of creating a second one, and a double-tapped submit button cannot produce
-two applications. `status` is `$setOnInsert` only, so a re-submit can never reset a
-decision staff have already made. Applying to a *second* portfolio is a different
-key, so that still works — deliberately.
-
-### The inbox
-
-`/applications` — the same shared staff key as the HackPass desk, read from the
+`/applications` uses the same shared staff key as the HackPass desk, read from the
 same `sessionStorage` entry, so moving between the two tools does not ask for it
 twice. Filter by portfolio, expand a row for the full answers and contact details,
 set a status, or export the current filter to CSV. Status changes are optimistic
@@ -427,6 +443,10 @@ and roll back if the write fails.
 
 `STAFF_KEY` is the env var going forward; `HACKPASS_STAFF_KEY` is still honoured so
 the deployed environment keeps working unchanged.
+
+**Reopening recruitment** means bringing back the public half — the form section,
+`POST /api/applications` and its validator. They are in git history, last present
+in commit `717d69e`.
 
 ## The live programs list
 
@@ -465,9 +485,8 @@ function in `api/index.mjs`.
 
 1. Create a MongoDB Atlas cluster (the free tier is plenty for a club).
 2. In the Vercel project, set `MONGODB_URI`, `MONGODB_DB` and `STAFF_KEY` (the
-   shared key for `/staff` and `/applications`). Optionally `RECRUITMENT_CLOSED=1`
-   to close applications. Never commit these — `.env*` is gitignored and
-   `.env.example` holds only localhost defaults.
+   shared key for `/staff` and `/applications`). Never commit these — `.env*` is
+   gitignored and `.env.example` holds only localhost defaults.
 3. Allow Vercel's egress in Atlas. Serverless functions do not have fixed IPs, so
    either allow `0.0.0.0/0` with a strong password or put the cluster behind a
    Vercel integration.

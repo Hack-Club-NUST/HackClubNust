@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
+import AnnouncementBar from './components/AnnouncementBar';
 import Navbar from './components/Navbar';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Programs from './sections/Programs';
 import Chapter from './sections/Chapter';
 import Games from './sections/Games';
-import Recruit from './sections/Recruit';
 import Footer from './sections/Footer';
 import StaffPage from './StaffPage';
 import ApplicationsPage from './ApplicationsPage';
+import { ORIENTATION_ENDS_AT } from './orientation';
 
 /**
  * Two internal tools live beside the site at fixed paths. A plain pathname
@@ -25,6 +26,9 @@ export default function App() {
 
 function Site() {
   const [entranceComplete, setEntranceComplete] = useState(false);
+  // Decided once per visit: the bar is up until orientation is over, and the
+  // navbar moves down to make room for it only while it is.
+  const [barVisible] = useState(() => Date.now() < ORIENTATION_ENDS_AT);
 
   useEffect(() => {
     const timeout = setTimeout(() => setEntranceComplete(true), 800);
@@ -36,13 +40,13 @@ function Site() {
       className="relative w-full overflow-x-hidden bg-ink"
       style={{ fontFamily: '"Space Mono", monospace' }}
     >
-      <Navbar entranceComplete={entranceComplete} />
+      {barVisible && <AnnouncementBar entranceComplete={entranceComplete} />}
+      <Navbar entranceComplete={entranceComplete} offset={barVisible} />
       <Hero entranceComplete={entranceComplete} />
       <About />
       <Programs />
       <Chapter />
       <Games />
-      <Recruit />
       <Footer />
     </div>
   );

@@ -44,8 +44,8 @@ async function ensureIndexes(db) {
     // one hackpass per player; codes must never collide
     db.collection('hackpasses').createIndex({ playerId: 1 }, { unique: true }),
     db.collection('hackpasses').createIndex({ code: 1 }, { unique: true }),
-    // one application per person per portfolio — a second submit is a correction,
-    // not a new row, and a refreshed form cannot quietly duplicate itself
+    // one application per person per portfolio. Recruitment is closed, so
+    // nothing inserts here now; the indexes still serve the staff inbox.
     db.collection('applications').createIndex({ email: 1, portfolio: 1 }, { unique: true }),
     db.collection('applications').createIndex({ createdAt: -1 }),
   ]);
