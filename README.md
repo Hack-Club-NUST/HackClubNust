@@ -413,9 +413,8 @@ is condensed enough to go large; the countdown stays in Space Mono so its digits
 do not change width. `prefers-reduced-motion` swaps the flip and the roll for
 plain fades and turns the glow, sheen and ping off.
 
-- **Dates** live in `src/orientation.ts`, in Pakistan time. No start time has been
-  announced, so the countdown runs to the start of the day; set
-  `ORIENTATION_STARTS_AT` to the real time once there is one.
+- **Dates** live in `src/orientation.ts`, in Pakistan time. The countdown runs to
+  `ORIENTATION_STARTS_AT` — 2pm on 6 October — and reads "Today" from then on.
 - **It takes itself down.** Past `ORIENTATION_ENDS_AT` the bar stops rendering and
   the navbar moves back to the top, so nobody has to remember to remove it.
 - It sits at `z-[60]` — above the navbar, below the game overlays, which cover it.
