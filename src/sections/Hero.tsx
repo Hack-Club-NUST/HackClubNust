@@ -199,8 +199,8 @@ export default function Hero({ entranceComplete }: HeroProps) {
               transition={{ duration: 0.9, ease: [0.215, 0.61, 0.355, 1.0], delay: 0.2 }}
             >
               The NUST chapter of Hack Club — a worldwide nonprofit network of student-run coding
-              clubs. Weekly build sessions, workshops, hackathons, and whatever the club decides
-              to make next. No experience asked for.
+              clubs. We host hackathons, workshops, and tech and cyber events, and build whatever
+              the club decides to make next. No experience asked for.
             </motion.p>
 
             <motion.div

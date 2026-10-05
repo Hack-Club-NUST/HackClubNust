@@ -1,7 +1,6 @@
 import express from 'express';
 import { GAMES } from './db.mjs';
 import { WIN_THRESHOLDS, meetsThreshold, scoreExceedsCeiling } from './hackpass.mjs';
-import { getPrograms } from './programs.mjs';
 import { APPLICATION_STATUSES, PORTFOLIO_IDS } from './recruitment.mjs';
 import {
   applicationCounts,
@@ -211,17 +210,6 @@ export function createApp() {
       res.json({ redeemed: true, redeemedAt: pass.redeemedAt });
     })
   );
-
-  /**
-   * Hack Club HQ's currently-running programs. Not guarded by `guard` — it
-   * touches no database, and its own fallback already covers HQ being down.
-   */
-  app.get('/api/programs', async (_req, res) => {
-    const { programs, fetchedAt } = await getPrograms();
-    if (!programs) return res.status(503).json({ error: 'Could not reach Hack Club right now.' });
-    res.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=86400');
-    res.json({ programs, fetchedAt });
-  });
 
   /* ------------------------- applications inbox ------------------------- */
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Anton+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Anton+SC&family=Press+Start+2P&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
 @tailwind base;
@@ -74,4 +74,63 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(237, 74, 82, 0.7);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Minecraft GUI pieces, for the orientation modal. Bevels are inset shadows:  */
+/* light on the top-left edge, dark on the bottom-right, like the game's UI.   */
+/* ------------------------------------------------------------------------- */
+@layer components {
+  .mc-panel {
+    background: #c6c6c6;
+    border: 3px solid #000;
+    box-shadow: inset 4px 4px 0 #fff, inset -4px -4px 0 #555;
+  }
+  .mc-slot {
+    background: #8b8b8b;
+    box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #fff;
+  }
+  .mc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 0 16px;
+    background: #6f6f6f;
+    border: 2px solid #000;
+    box-shadow: inset 2px 2px 0 #a8a8a8, inset -2px -4px 0 #3a3a3a;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    text-shadow: 2px 2px 0 #3f3f3f;
+    transition: background-color 80ms;
+  }
+  .mc-btn:hover,
+  .mc-btn:focus-visible {
+    background: #7383c2;
+    box-shadow: inset 2px 2px 0 #a5b4f0, inset -2px -4px 0 #3c4a86;
+    outline: none;
+  }
+  .mc-btn:active {
+    box-shadow: inset -2px -2px 0 #a8a8a8, inset 2px 4px 0 #3a3a3a;
+  }
+  .mc-btn-green {
+    background: #3c8527;
+    box-shadow: inset 2px 2px 0 #6cc349, inset -2px -4px 0 #1e4d12;
+  }
+  .mc-btn-green:hover,
+  .mc-btn-green:focus-visible {
+    background: #4a9c33;
+    box-shadow: inset 2px 2px 0 #87de62, inset -2px -4px 0 #24601a;
+  }
+  /* a strip of grass block: a pixel-stepped green top over dirt */
+  .mc-grass {
+    height: 22px;
+    background:
+      repeating-linear-gradient(90deg, #5dbb3f 0 10px, #4c9e32 10px 20px, #6ccb4a 20px 30px, #57b13a 30px 40px) top / 100% 10px no-repeat,
+      repeating-linear-gradient(90deg, #4c9e32 0 10px, transparent 10px 30px, #5dbb3f 30px 40px) 0 10px / 100% 4px no-repeat,
+      repeating-linear-gradient(90deg, #866043 0 10px, #6e4b33 10px 20px, #9a7150 20px 30px, #79553a 30px 40px);
+  }
 }

@@ -7,11 +7,12 @@ One page, in this order:
 
 | Section | What it is |
 |---|---|
-| Announcement bar | the orientation headline — a red flip board with a live countdown |
+| Announcement bar | the orientation headline — a red flip board with a live countdown; click it for the details |
 | Hero | mouse-scrubbed video, the club's line, the two CTAs |
 | About | what Hack Club is, its published numbers, its stated beliefs |
-| Programs | HQ's standing infrastructure + **whatever HQ is running today, fetched live** |
-| Chapter | what a semester here looks like, and what we have already run |
+| Events | what the club runs — hackathons, workshops, tech & cyber events — and what is up next |
+| Chapter | what this club has already run: The Cyber Hackathon ’26 in full, then the rest of the record |
+| Team | the club's office bearers, from `src/team.ts` |
 | Games | the two games the club built, playable in place |
 | Footer | socials, WhatsApp, contact |
 
@@ -63,6 +64,7 @@ src/
   App.tsx             pathname switch: /staff, /applications, or the site
   components/
     AnnouncementBar.tsx the orientation flip board + countdown, pinned above the navbar
+    OrientationModal.tsx  Minecraft-themed orientation details
     HackClubLogo.tsx    the club "</>" mark, stroked so it inherits currentColor
     Navbar.tsx          expanding glass pill menu + Join CTA
     ScrambleIn.tsx      entrance reveal (0.5 chars/frame, 25ms)
@@ -71,12 +73,15 @@ src/
   sections/
     Hero.tsx        mouse-scrubbed video, watermark, scramble headings
     About.tsx       what Hack Club is; numbers and beliefs, as HQ publishes them
-    Programs.tsx    HQ's permanent programs + the live list from /api/programs
-    Chapter.tsx     brand-gradient "a semester here" + the chapter's track record
+    Events.tsx      what the club runs + the "up next" card that opens the orientation modal
+    Chapter.tsx     brand-gradient record of events the club has run
+    Team.tsx        the office bearers, as initials cards
     Games.tsx       the two game cards  <-- game entry points live here
     Footer.tsx      video panel + socials
   recruitment.ts    client half of the applications inbox: types + API calls
   orientation.ts    the orientation dates the announcement bar counts down to
+  team.ts           the office bearers, in order of office
+  events.ts         the club's own events: orientation details, pillars, the record
   links.ts          the WhatsApp community invite
   ApplicationsPage.tsx  the exec team's inbox at /applications
   StaffPage.tsx         the HackPass desk at /staff
@@ -447,32 +452,22 @@ the deployed environment keeps working unchanged.
 `POST /api/applications` and its validator. They are in git history, last present
 in commit `717d69e`.
 
-## The live programs list
+## The club's events
 
-Hack Club's global programs are short "You Ship, We Ship" campaigns that start and
-end constantly — 34 were open the day this was written, and a hardcoded list would
-carry dead links to HQ within a fortnight. So `server/programs.mjs` reads them from
-HQ's own events API (`hackclub.com/api/v1/events`) and `GET /api/programs` serves
-them.
+Everything in the Events and Chapter sections comes from `src/events.ts`, and every
+line in it is a claim about something the club actually ran — sourced from the
+club's Instagram (@hackclub.nust) and, for The Cyber Hackathon ’26, PKCERT's event
+page. Add an event when it happens; leave a detail out rather than guess at it.
 
-It is fetched **server-side**, not from the browser: hackclub.com sets no CORS
-header worth relying on, and one warm serverless container can share a single
-cached response across every visitor rather than sending each of them to HQ. The
-cache is an hour; on a timeout or an HQ outage it serves the last good list however
-stale, and the section's hardcoded half (Slack, HCB, Jams, Hackatime, Scrapbook,
-the hackathons directory — the things that do not move) carries it if there has
-never been one.
+The orientation modal (`components/OrientationModal.tsx`) is dressed like the
+orientation poster — a Minecraft inventory panel, in Press Start 2P. The poster
+image is the club's six-tile Instagram grid stitched back into one. The modal opens
+itself once per visit and from the announcement bar, and goes away with the bar at
+`ORIENTATION_ENDS_AT`.
 
-Entries with no description are dropped: HQ leaves placeholders in the feed, and a
-card with a bare name and nothing under it reads as broken.
-
-### On accuracy
-
-Hack Club HQ scopes most of its ship-a-project programs to makers aged **13–18**;
-only HCB and Hackatime are stated as all-ages. NUST is a university. The Programs
-section says exactly that rather than implying members here can claim HQ prizes —
-an inaccuracy our own members would catch in a week. Keep that line honest if the
-copy is rewritten.
+These sections used to list Hack Club HQ's own programs, fetched live from HQ's
+events API. None of those were things this chapter runs, and HQ scopes most of them
+to ages 13–18, so they were removed along with `/api/programs`.
 
 Hack Club's brand rules also require the name be written **Hack Club**, never
 "Hackclub" — including the hero watermark.

@@ -24,7 +24,8 @@ export default function Navbar({ entranceComplete, offset = false }: NavbarProps
 
   const links = [
     { label: 'Club', target: '#club' },
-    { label: 'Programs', target: '#programs' },
+    { label: 'Events', target: '#events' },
+    { label: 'Team', target: '#team' },
     { label: 'Games', target: '#games' },
     { label: 'Contact', target: '#contact' }, // the footer carries the socials
   ];
@@ -53,7 +54,7 @@ export default function Navbar({ entranceComplete, offset = false }: NavbarProps
           {/* expanding menu pill */}
           <motion.div
             className="flex h-12 items-center overflow-hidden rounded-[14px] bg-white/15 backdrop-blur-md"
-            animate={{ width: menuOpen ? 420 : 48 }}
+            animate={{ width: menuOpen ? 490 : 48 }}
             transition={pillSpring}
           >
             <button

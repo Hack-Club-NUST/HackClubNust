@@ -40,16 +40,19 @@ function RollingDigit({ digit, roll }: { digit: string; roll: boolean }) {
 
 interface AnnouncementBarProps {
   entranceComplete: boolean;
+  /** Opens the orientation details. */
+  onOpen: () => void;
 }
 
 /**
  * The orientation headline: one solid red bar carrying what, when, and a live
  * countdown — nothing else. The headline and the date share a slot and flip
  * over like a departure board, the countdown's digits roll, a glow breathes
- * under the bar, and hovering pops the whole thing out. Display only. Sits
- * above the navbar (z-50) and below the game overlays (z-100), which cover it.
+ * under the bar, and hovering pops the whole thing out. Clicking it opens the
+ * orientation details. Sits above the navbar (z-50) and below the game
+ * overlays (z-100), which cover it.
  */
-export default function AnnouncementBar({ entranceComplete }: AnnouncementBarProps) {
+export default function AnnouncementBar({ entranceComplete, onOpen }: AnnouncementBarProps) {
   const [now, setNow] = useState(() => Date.now());
   const [index, setIndex] = useState(0);
   const [hovered, setHovered] = useState(false);
@@ -84,11 +87,12 @@ export default function AnnouncementBar({ entranceComplete }: AnnouncementBarPro
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
     >
-      {/* the flipping text is noise to a screen reader; this is what it reads */}
-      <p className="sr-only">Hack Club NUST Orientation 26–27 is on 6 October 2026.</p>
-
-      <motion.div
-        className="relative flex justify-center overflow-hidden bg-brand-grad px-4"
+      {/* the flipping text is noise to a screen reader; the label is what it reads */}
+      <motion.button
+        type="button"
+        onClick={onOpen}
+        aria-label="Hack Club NUST Orientation 26–27 is on 6 October 2026. See the details."
+        className="relative flex w-full cursor-pointer justify-center overflow-hidden bg-brand-grad px-4"
         animate={{ paddingTop: hovered ? 6 : 0, paddingBottom: hovered ? 6 : 0 }}
         transition={popSpring}
       >
@@ -150,7 +154,7 @@ export default function AnnouncementBar({ entranceComplete }: AnnouncementBarPro
             <span className={headlineClass}>Today</span>
           )}
         </motion.div>
-      </motion.div>
+      </motion.button>
 
       {/* the glow under the bar: it breathes on its own, and swells on hover */}
       <motion.div

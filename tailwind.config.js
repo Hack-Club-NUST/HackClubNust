@@ -8,6 +8,7 @@ export default {
         serif: ['"Space Mono"', 'monospace'],
         mono: ['"Space Mono"', 'monospace'],
         display: ['"Anton SC"', 'sans-serif'],
+        pixel: ['"Press Start 2P"', 'monospace'],
       },
       colors: {
         ink: '#0B0507',
