@@ -1,154 +1,130 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Brain, Music } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useInView, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import AiHumanGame from '../game/components/AiHumanGame';
 import CipherTunesGame from '../game/tunes/components/CipherTunesGame';
+import ScrambleIn from '../components/ScrambleIn';
+import Cabinet from './games/Cabinet';
+import { EASE_OUT, GAMES, type GameId } from './games/data';
+import { VIDEOS } from '../videos';
 
-const GAMES = [
-  {
-    id: 'ai-vs-human',
-    Icon: Brain,
-    title: 'AI vs Human',
-    tagline: 'Detector',
-    desc: 'Fifteen rounds of prose, code and images. Some hand you one artifact and ask who made it; some put two side by side and ask which one the machine made. Every call is answered with the tell you missed.',
-    meta: ['Text · Code · Image', 'Single + compare', 'Club leaderboard'],
-    status: 'live' as const,
-  },
-  {
-    id: 'cipher-tunes',
-    Icon: Music,
-    title: 'Cipher Tunes',
-    tagline: 'Listen & Spell',
-    desc: 'Seven letters, seven tunes, recorded by the club. Learn them on the practice board, then a word plays as one melody and you spell back what you heard. No notation, no theory — just ears.',
-    meta: ['7 letter tunes', 'Practice first', 'Club leaderboard'],
-    status: 'live' as const,
-  },
-];
+const HEADING = 'Play what we made.';
 
 export default function Games() {
-  const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [activeGame, setActiveGame] = useState<GameId | null>(null);
+  const reduce = !!useReducedMotion();
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const h2Ref = useRef<HTMLHeadingElement>(null);
+  const h2InView = useInView(h2Ref, { once: true, amount: 0.6 });
+  // not `once`: this is the offscreen pause signal for both attract loops
+  const sectionVisible = useInView(sectionRef, { amount: 'some' });
+
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const staticY = useMotionValue(0);
+  const watermarkY = reduce ? staticY : parallaxY;
+
+  const fade = {
+    initial: { opacity: 0 },
+    whileInView: { opacity: 1 },
+    viewport: { once: true, amount: 0.4 },
+    transition: { duration: reduce ? 0.3 : 0.7, ease: EASE_OUT },
+  };
 
   return (
-    <section id="games" className="relative w-full bg-ink px-6 py-32">
-      <div className="mx-auto max-w-6xl">
-        <motion.p
-          className="mb-8 text-center text-[13px] uppercase tracking-[0.2em] text-white/40 sm:text-[14px]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 1.0 }}
-        >
-          Built At The Club
-        </motion.p>
+    <section
+      id="games"
+      data-surface="dark"
+      ref={sectionRef}
+      className="section bg-ink text-fg [touch-action:pan-y]"
+    >
+      {/* the room: the black-hole clip, dimmed under the hero's vignette */}
+      {!reduce && <Backdrop visible={sectionVisible} />}
+      <div className="pointer-events-none absolute inset-0 bg-vignette" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" aria-hidden="true" />
+      <div className="grid-dots pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
 
-        <motion.h2
-          className="mb-6 text-center text-[clamp(28px,6vw,56px)] font-light leading-[1.15] tracking-[-0.02em] text-white"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 1.0 }}
-        >
-          Play what we made.
-        </motion.h2>
+      {/* the hero's watermark treatment: red light inside the letters */}
+      <motion.div
+        aria-hidden="true"
+        style={{
+          y: watermarkY,
+          backgroundImage: 'radial-gradient(circle, rgba(242,98,81,0) 0%, #EB4554 70%)',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          color: 'transparent',
+        }}
+        className="pointer-events-none absolute right-[-0.04em] top-12 select-none font-display text-[clamp(90px,18vw,300px)] uppercase leading-[0.9] tracking-[-0.03em] opacity-[0.14] md:top-14"
+      >
+        PLAY
+      </motion.div>
 
-        <motion.p
-          className="mx-auto mb-20 max-w-xl text-center text-[14px] leading-relaxed text-white/45 sm:text-[15px]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 1.0, delay: 0.15 }}
-        >
-          Both of these started as a club project and ended up on a table at a NUST stall with a
-          queue in front of it. Members wrote the engines, recorded the audio and sourced every
-          image. Source is on GitHub — read it, fork it, break it.
-        </motion.p>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {GAMES.map((game, i) => (
-            <motion.article
-              key={game.id}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-8 sm:p-10"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.8, delay: i * 0.15 }}
-              whileHover={{ borderColor: 'rgba(237,74,82,0.45)' }}
+      <div className="wrap relative">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-end">
+          <div>
+            <motion.p className="kicker" {...fade}>
+              05 / Built at the club
+            </motion.p>
+            <h2
+              ref={h2Ref}
+              className="mt-5 min-h-[1em] font-mono text-[clamp(32px,5.5vw,64px)] font-normal leading-[1.0] tracking-[-0.03em] text-fg xl:whitespace-nowrap"
             >
-              {/* brand glow on hover */}
-              <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-brand-grad opacity-0 blur-[80px] transition-opacity duration-500 group-hover:opacity-40" />
-
-              <div className="relative flex items-start justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-grad">
-                  <game.Icon size={22} strokeWidth={1.6} className="text-white" />
-                </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] ${
-                    game.status === 'live'
-                      ? 'border border-brand/50 bg-brand/10 text-brand'
-                      : 'border border-white/15 text-white/40'
-                  }`}
-                >
-                  {game.status === 'live' ? 'Playable' : 'In Development'}
-                </span>
-              </div>
-
-              <h3 className="relative mt-8 text-[28px] font-light leading-none tracking-[-0.02em] text-white sm:text-[34px]">
-                {game.title}
-              </h3>
-              <p className="relative mt-2 text-[12px] uppercase tracking-[0.2em] text-brand">
-                {game.tagline}
-              </p>
-
-              <p className="relative mt-6 text-[13px] leading-relaxed text-white/45 sm:text-[15px]">
-                {game.desc}
-              </p>
-
-              <ul className="relative mt-8 flex flex-wrap gap-2">
-                {game.meta.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-white/35 sm:text-[12px]"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex-1" />
-
-              {game.status === 'live' ? (
-                <button
-                  type="button"
-                  onClick={() => setActiveGame(game.id)}
-                  className="relative mt-10 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand-grad text-[14px] font-bold text-white shadow-[0_8px_30px_rgba(235,69,84,0.3)] transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <i className="bi bi-play-fill text-[18px]" aria-hidden="true" />
-                  Play Now
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="relative mt-10 flex h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-white/15 text-[14px] font-bold text-white/35"
-                >
-                  <i className="bi bi-hourglass-split text-[14px]" aria-hidden="true" />
-                  Coming Soon
-                </button>
-              )}
-            </motion.article>
-          ))}
+              {reduce ? HEADING : <ScrambleIn text={HEADING} delay={0} triggered={h2InView} />}
+            </h2>
+          </div>
+          <motion.p className="font-sans text-[17px] leading-[1.55] text-fg-2 sm:text-[19px] max-w-xl lg:pb-2" {...fade}>
+            Both of these started as a club project and ended up on a table at a NUST stall with a queue in front of
+            it. Members wrote the engines, recorded the audio and sourced every image. Source is on GitHub — read it,
+            fork it, break it.
+          </motion.p>
         </div>
+
+        <motion.div
+          className="mt-14 grid grid-cols-1 gap-6 md:mt-20 md:grid-cols-2"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: reduce ? 0.3 : 0.7, ease: EASE_OUT }}
+        >
+          <Cabinet index={0} game={GAMES[0]} onPlay={() => setActiveGame('ai-vs-human')} sectionVisible={sectionVisible} />
+          <Cabinet index={1} game={GAMES[1]} onPlay={() => setActiveGame('cipher-tunes')} sectionVisible={sectionVisible} />
+        </motion.div>
       </div>
 
-      <AiHumanGame
-        open={activeGame === 'ai-vs-human'}
-        onClose={() => setActiveGame(null)}
-      />
-
-      <CipherTunesGame
-        open={activeGame === 'cipher-tunes'}
-        onClose={() => setActiveGame(null)}
-      />
+      {/* overlays: direct children of <section>, never inside anything with a transform */}
+      <AiHumanGame open={activeGame === 'ai-vs-human'} onClose={() => setActiveGame(null)} />
+      <CipherTunesGame open={activeGame === 'cipher-tunes'} onClose={() => setActiveGame(null)} />
     </section>
+  );
+}
+
+/**
+ * The section's backdrop video. It is only fetched once the section is near the
+ * viewport, plays only while it is on screen, and is never rendered at all for
+ * visitors who prefer reduced motion.
+ */
+function Backdrop({ visible }: { visible: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  // latches on the first time the section is near; never unmounts after that
+  const [mounted, setMounted] = useState(false);
+  if (visible && !mounted) setMounted(true);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    if (visible) void v.play().catch(() => {});
+    else v.pause();
+  }, [visible, mounted]);
+  if (!mounted) return null;
+  return (
+    <video
+      ref={ref}
+      src={VIDEOS.games}
+      muted
+      loop
+      playsInline
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.28]"
+    />
   );
 }

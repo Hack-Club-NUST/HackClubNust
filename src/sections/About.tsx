@@ -1,10 +1,13 @@
-import { motion } from 'framer-motion';
-import HackClubLogo from '../components/HackClubLogo';
+import { useRef } from 'react';
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import ScrambleIn from '../components/ScrambleIn';
+import DotField from './about/DotField';
+import { fade as fadeProps } from './about/motion';
 
 /**
- * What Hack Club is, and what this chapter is inside it. This is the first
- * thing after the hero because most visitors arrive knowing the NUST name and
- * not the Hack Club one.
+ * 01 — The Club. What Hack Club is, and what this chapter is inside it. This is
+ * the first thing after the hero because most visitors arrive knowing the NUST
+ * name and not the Hack Club one. Surface: paper ("the lights come on").
  */
 
 /* Figures as published by Hack Club. HQ quotes a few different numbers across
@@ -16,130 +19,129 @@ const STATS = [
   { value: '501(c)(3)', label: 'Nonprofit' },
 ];
 
-/* Hack Club's own stated beliefs, condensed. The carpentry line is theirs. */
-const PRINCIPLES = [
-  {
-    icon: 'bi-lightning-charge',
-    title: 'Coding is a superpower',
-    body: 'It converts you from a consumer into a creator. The computer stops being a thing you use and starts being a thing you build with.',
-  },
-  {
-    icon: 'bi-hammer',
-    title: 'Start building',
-    body: 'Most coding classes teach concepts instead of how to write real code. Hack Club calls that trying to learn carpentry without any wood.',
-  },
-  {
-    icon: 'bi-arrow-repeat',
-    title: 'Learn as you build',
-    body: 'You will not understand how it works when you start. You build the understanding on the way. You get stuck, and somebody helps.',
-  },
-  {
-    icon: 'bi-people-fill',
-    title: 'Be part of a community',
-    body: 'Artists, writers, engineers, tinkerers, filmmakers. We make things, we help one another, and we have fun doing it.',
-  },
-];
+const HEADING = ['A worldwide network', 'of student coding clubs.', 'This is the NUST one.'];
+
+const LEDE =
+  'Hack Club is a nonprofit network of coding clubs, started in 2014 by a sixteen-year-old and now run as The Hack Foundation, a registered US charity. It reaches around a hundred thousand teenagers a year across more than 1,500 clubs, and it is free, forever, for every one of them.';
+
+const CHAPTER =
+  'Hack Club NUST is the chapter at the National University of Sciences and Technology in Islamabad, running since 2021. We run the sessions, the workshops and the hackathons on this campus, and we build our own things in between — which is where the games further down came from.';
 
 export default function About() {
+  const reduce = useReducedMotion() ?? false;
+  const fade = (delay: number) => fadeProps(reduce, delay);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const h2Ref = useRef<HTMLHeadingElement>(null);
+  const statsRef = useRef<HTMLUListElement>(null);
+  const h2InView = useInView(h2Ref, { once: true, amount: 0.6 });
+  const statsInView = useInView(statsRef, { once: true, amount: 0.6 });
+
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const watermarkY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
   return (
-    <section id="club" className="relative w-full overflow-hidden bg-ink px-6 py-32">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.9 }}
-          >
-            <p className="text-[13px] uppercase tracking-[0.2em] text-white/40">The Club</p>
-            <h2 className="mt-6 text-[clamp(26px,4.4vw,44px)] font-light leading-[1.15] tracking-[-0.02em] text-white">
-              A worldwide network of student coding clubs.{' '}
-              <span className="text-brand">This is the NUST one.</span>
-            </h2>
+    <section ref={sectionRef} id="club" data-surface="paper" className="section surface-paper">
+      <div className="grid-dots pointer-events-none absolute inset-0" aria-hidden="true" />
 
-            <div className="mt-8 flex items-center gap-3 text-white/30">
-              <HackClubLogo size={20} />
-              <span className="text-[13px]">hackclub.com</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="flex flex-col gap-6 text-[14px] leading-relaxed text-white/50 sm:text-[15.5px]"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.9, delay: 0.15 }}
-          >
-            <p>
-              Hack Club is a nonprofit network of coding clubs, started in 2014 by a
-              sixteen-year-old and now run as The Hack Foundation, a registered US charity. It
-              reaches around a hundred thousand teenagers a year across more than 1,500 clubs, and
-              it is free, forever, for every one of them.
-            </p>
-            <p>
-              It is not a course and not competition prep. The whole thing runs on one line —
-              <span className="text-white/75"> we are at our best when we are making</span> — a
-              Slack full of people shipping at odd hours, and a rotating stack of challenges that
-              send you something real for finishing a project. Their words: for teens, by teens.
-            </p>
-            <p className="text-white/70">
-              Hack Club NUST is the chapter at the National University of Sciences and Technology
-              in Islamabad, running since 2021. We run the sessions, the workshops and the
-              hackathons on this campus, and we build our own things in between — which is where
-              the games further down came from.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* ------------------------------- stats ------------------------------- */}
+      <div className="wrap relative">
         <motion.div
-          className="mt-20 grid grid-cols-2 gap-8 border-y border-white/8 py-10 md:grid-cols-4"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.9 }}
+          aria-hidden="true"
+          style={{ y: reduce ? 0 : watermarkY }}
+          className="pointer-events-none absolute right-4 top-0 select-none font-display text-[clamp(72px,14vw,220px)] uppercase leading-[0.9] tracking-[-0.02em] text-pen opacity-[0.07] sm:right-6"
         >
-          {STATS.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-            >
-              <div className="text-[clamp(24px,4vw,38px)] font-light leading-none text-white">
-                {stat.value}
-              </div>
-              <div className="mt-2 text-[12px] uppercase tracking-[0.12em] text-white/35">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
+          01
         </motion.div>
 
-        {/* ----------------------------- principles ---------------------------- */}
-        <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2">
-          {PRINCIPLES.map((principle, i) => (
-            <motion.div
-              key={principle.title}
-              className="flex gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
+        {/* ------------------------------ header ------------------------------ */}
+        <motion.p className="kicker-paper relative" {...fade(0)}>
+          01 / The Club
+        </motion.p>
+
+        <h2
+          ref={h2Ref}
+          className="relative mt-6 max-w-[24ch] font-mono text-[clamp(32px,5.5vw,64px)] font-normal leading-[1.0] tracking-[-0.03em] text-pen"
+        >
+          <span className="sr-only">{HEADING.join(' ')}</span>
+          <span aria-hidden="true">
+            {HEADING.map((line, i) => (
+              <span key={line} className={i === 2 ? 'block text-brand-deep' : 'block'}>
+                {reduce ? line : <ScrambleIn text={line} delay={i * 250} triggered={h2InView} />}
+              </span>
+            ))}
+          </span>
+        </h2>
+
+        <motion.div
+          className="relative mt-12 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-8"
+          {...fade(0.25)}
+        >
+          <p className="max-w-prose font-sans text-[17px] leading-[1.55] text-pen sm:text-[19px] lg:col-span-6">
+            {LEDE}
+          </p>
+          <div className="flex max-w-prose flex-col gap-5 font-sans text-[16px] leading-[1.6] text-pen-2 lg:col-span-5 lg:col-start-8">
+            <p>
+              It is not a course and not competition prep. The whole thing runs on one line —{' '}
+              <em className="italic text-pen">we are at our best when we are making</em> — a Slack
+              full of people shipping at odd hours, and a rotating stack of challenges that send
+              you something real for finishing a project. Their words: for teens, by teens.
+            </p>
+            <p>{CHAPTER}</p>
+          </div>
+        </motion.div>
+
+        {/* ------------------------------ figure ------------------------------ */}
+        <motion.figure
+          className="relative mt-20 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8"
+          {...fade(0)}
+        >
+          <DotField />
+          <figcaption className="flex flex-col lg:justify-end lg:pb-1">
+            <span className="font-mono text-[12px] uppercase tracking-[0.08em] text-pen-3">
+              Fig. 01
+            </span>
+            <p className="mt-3 font-sans text-[16px] leading-[1.5] text-pen-2">
+              1,500+ clubs. One of them is ours.
+            </p>
+            <a
+              href="https://hackclub.com"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 w-fit font-mono text-[12px] uppercase tracking-[0.08em] text-signal-deep underline-offset-4 transition-colors duration-200 hover:text-pen hover:underline"
             >
-              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-                <i className={`bi ${principle.icon} text-[15px] text-brand`} aria-hidden="true" />
-              </div>
-              <div>
-                <h3 className="text-[16px] font-normal text-white">{principle.title}</h3>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-white/40 sm:text-[14px]">
-                  {principle.body}
-                </p>
-              </div>
-            </motion.div>
+              hackclub.com ↗
+            </a>
+          </figcaption>
+        </motion.figure>
+
+        {/* ------------------------------- stats ------------------------------ */}
+        <ul
+          ref={statsRef}
+          className="relative mt-20 border-y border-line-paper lg:grid lg:grid-cols-4"
+        >
+          {STATS.map((s, i) => (
+            <li
+              key={s.label}
+              className="flex items-baseline justify-between gap-4 border-b border-line-paper py-5 last:border-b-0 lg:block lg:border-b-0 lg:border-l lg:py-8 lg:pl-6 lg:first:border-l-0 lg:first:pl-0"
+            >
+              <span className="sr-only">
+                {s.value} — {s.label}
+              </span>
+              <span
+                aria-hidden="true"
+                className="whitespace-nowrap font-mono text-[clamp(40px,3.4vw,48px)] tabular-nums leading-none tracking-[-0.04em] text-pen"
+              >
+                {reduce ? s.value : <ScrambleIn text={s.value} delay={i * 120} triggered={statsInView} />}
+              </span>
+              <span
+                aria-hidden="true"
+                className="text-right font-mono text-[12px] uppercase tracking-[0.08em] text-pen-3 lg:mt-3 lg:block lg:text-left"
+              >
+                {s.label}
+              </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

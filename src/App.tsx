@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import AnnouncementBar from './components/AnnouncementBar';
 import Navbar from './components/Navbar';
 import OrientationModal from './components/OrientationModal';
+import { SoundDock } from './components/SoundButton';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Events from './sections/Events';
 import Chapter from './sections/Chapter';
 import Team from './sections/Team';
 import Games from './sections/Games';
+import Social from './sections/Social';
 import Footer from './sections/Footer';
 import StaffPage from './StaffPage';
 import ApplicationsPage from './ApplicationsPage';
@@ -70,7 +72,9 @@ function Site() {
       <Chapter />
       <Team />
       <Games />
+      <Social />
       <Footer />
+      <SoundDock />
       <OrientationModal open={orientationOpen} onClose={closeOrientation} />
     </div>
   );

@@ -19,7 +19,7 @@ export default function SquashHamburger({ isOpen, isMobile = false }: SquashHamb
     width,
     height: bar,
     borderRadius: bar,
-    background: '#fff',
+    background: 'currentColor', // follows the navbar's surface
   };
 
   return (

@@ -452,6 +452,17 @@ the deployed environment keeps working unchanged.
 `POST /api/applications` and its validator. They are in git history, last present
 in commit `717d69e`.
 
+## Design system
+
+Everything below the hero follows `docs/design-system.md`: three surfaces (ink,
+graphite/arcade, paper) instead of one red-black, a cool `signal` accent, red kept
+as light rather than paint (kicker LEDs, one primary button per section), Instrument
+Sans for reading copy, and one pointer-driven toy per section — the dot-field lens
+(About), the rack (Events), the torch (Record), the swinging badges (Team), the CRT
+attract screens (Games) and the scrambling wordmark (Footer). Section-specific code
+lives in `src/sections/<name>/`. Sections set `data-surface="paper" | "dark"`, which
+the navbar reads to switch its pills.
+
 ## The club's events
 
 Everything in the Events and Chapter sections comes from `src/events.ts`, and every

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import ScrambleIn from '../components/ScrambleIn';
 import { VIDEOS } from '../videos';
 import { WHATSAPP_INVITE } from '../links';
+import SoundButton from '../components/SoundButton';
 
 const SENSITIVITY = 0.8;
 
@@ -224,6 +225,7 @@ export default function Hero({ entranceComplete }: HeroProps) {
               >
                 What is Hack Club?
               </a>
+              <SoundButton />
             </motion.div>
           </div>
 
