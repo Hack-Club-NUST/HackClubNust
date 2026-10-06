@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion, useTransform } from 'framer-motion';
 import type { OfficeBearer } from '../../team';
 import type { MotionValue } from 'framer-motion';
@@ -23,25 +24,53 @@ interface BadgeProps {
   rot: MotionValue<number>;
   enabled: boolean;
   bind: HangerBinding;
+  /** Opens this person's file. */
+  onOpen: () => void;
 }
+
+/** A press that travels further than this is a grab, not a click. */
+const CLICK_SLOP = 6;
 
 /**
  * One staff pass on its lanyard. The hanger (strap + clip + ring + card) is a single rigid
  * pendulum pivoting at its top centre, where the strap meets the rail.
  */
-export default function Badge({ member, index, rot, enabled, bind }: BadgeProps) {
+export default function Badge({ member, index, rot, enabled, bind, onOpen }: BadgeProps) {
   const rotate = useTransform(rot, clampSwing);
   const { grabbing, lifted, ...handlers } = bind;
+  const down = useRef<{ x: number; y: number } | null>(null);
+
+  // The swing owns pointerdown/keydown; opening the file rides on top of it:
+  // a press that barely moved is a click, and Enter opens while Space still flicks.
+  const open = {
+    onPointerDownCapture: (e: React.PointerEvent) => {
+      down.current = { x: e.clientX, y: e.clientY };
+    },
+    onClick: (e: React.MouseEvent) => {
+      const d = down.current;
+      down.current = null;
+      if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > CLICK_SLOP) return;
+      onOpen();
+    },
+    onKeyDownCapture: (e: React.KeyboardEvent) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      onOpen();
+    },
+  };
 
   return (
     <motion.div
       {...(enabled ? handlers : { ref: handlers.ref })}
-      role="group"
-      aria-labelledby={`team-name-${index} team-role-${index}`}
-      tabIndex={enabled ? 0 : -1}
+      {...open}
+      role="button"
+      aria-haspopup="dialog"
+      aria-label={`${member.name}, ${member.role}. Open their file.`}
+      tabIndex={0}
       data-grabbing={grabbing ? 'true' : 'false'}
       style={enabled ? { rotate, originX: 0.5, originY: 0 } : undefined}
-      className={`group relative flex select-none flex-col items-center [touch-action:pan-x_pan-y] focus-visible:outline-offset-4 ${
+      className={`group relative flex cursor-pointer select-none flex-col items-center [touch-action:pan-x_pan-y] focus-visible:outline-offset-4 ${
         enabled
           ? 'will-change-transform [@media(hover:hover)]:cursor-grab data-[grabbing=true]:cursor-grabbing'
           : ''

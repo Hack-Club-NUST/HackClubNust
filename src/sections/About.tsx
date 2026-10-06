@@ -14,7 +14,7 @@ import { fade as fadeProps } from './about/motion';
    its own pages; these are the ones on hackclub.com itself. */
 const STATS = [
   { value: '2014', label: 'Founded' },
-  { value: '100,000', label: 'Teens a year' },
+  { value: '100,000', label: 'Students a year' },
   { value: '1,500+', label: 'Clubs worldwide' },
   { value: '501(c)(3)', label: 'Nonprofit' },
 ];
@@ -22,7 +22,7 @@ const STATS = [
 const HEADING = ['A worldwide network', 'of student coding clubs.', 'This is the NUST one.'];
 
 const LEDE =
-  'Hack Club is a nonprofit network of coding clubs, started in 2014 by a sixteen-year-old and now run as The Hack Foundation, a registered US charity. It reaches around a hundred thousand teenagers a year across more than 1,500 clubs, and it is free, forever, for every one of them.';
+  'Hack Club is a nonprofit network of coding clubs, started in 2014 by a sixteen-year-old and now run as The Hack Foundation, a registered US charity. It reaches around a hundred thousand students a year across more than 1,500 clubs, and it is free, forever, for every one of them.';
 
 const CHAPTER =
   'Hack Club NUST is the chapter at the National University of Sciences and Technology in Islamabad, running since 2021. We run the sessions, the workshops and the hackathons on this campus, and we build our own things in between — which is where the games further down came from.';
@@ -84,7 +84,7 @@ export default function About() {
               It is not a course and not competition prep. The whole thing runs on one line —{' '}
               <em className="italic text-pen">we are at our best when we are making</em> — a Slack
               full of people shipping at odd hours, and a rotating stack of challenges that send
-              you something real for finishing a project. Their words: for teens, by teens.
+              you something real for finishing a project.
             </p>
             <p>{CHAPTER}</p>
           </div>

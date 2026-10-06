@@ -8,6 +8,12 @@
     <!-- The hero poster is the page's largest paint; fetch it alongside the JS
          rather than after React has mounted the video element. -->
     <link rel="preload" as="image" href="/hero-poster.jpg" />
+    <!-- Fonts from the head, not an @import inside the CSS bundle: the import only
+         starts after the bundle has loaded, which landed the display font ~4 s into
+         a cold visit. Preconnect + stylesheet here starts the fetch with the HTML. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Anton+SC&amp;family=Press+Start+2P&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" />
     <meta name="description" content="Hack Club NUST — the NUST chapter of Hack Club, a worldwide network of student-run coding clubs. Workshops, hackathons, and games we built ourselves." />
     <title>Hack Club NUST — Build. Break. Ship.</title>
     <meta property="og:title" content="Hack Club NUST" />

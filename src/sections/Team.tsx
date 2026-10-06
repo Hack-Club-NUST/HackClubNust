@@ -1,10 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import ScrambleIn from '../components/ScrambleIn';
 import { OFFICE_BEARERS } from '../team';
 import Badge from './team/Badge';
 import { EASE_OUT } from './team/constants';
 import { useSwing } from './team/useSwing';
+import TeamModal from './team/TeamModal';
 
 // distance from the viewport edge to the wrap's content box (max-w-6xl, px-4 sm:px-6)
 const GUTTER_PAD =
@@ -29,6 +30,7 @@ export default function Team() {
   const watermarkY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [40, -40]);
 
   const swing = useSwing(OFFICE_BEARERS.length, { sectionRef, rowRef });
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const entrance = reduce
     ? {
@@ -121,6 +123,7 @@ export default function Team() {
                       rot={swing.rot[i]}
                       enabled={swing.enabled}
                       bind={swing.bindHanger(i)}
+                      onOpen={() => setOpenIndex(i)}
                     />
                   </li>
                 ))}
@@ -132,7 +135,7 @@ export default function Team() {
         {/* caption */}
         <div className="rule-paper mt-4" />
         <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 font-mono text-[11px] uppercase tracking-[0.2em] text-pen-3">
-          <span>Six badges · Session 2026–27</span>
+          <span>Six badges · Session 2026–27 · Tap one to open their file</span>
           {swing.enabled && (
             <>
               <span className="hidden [@media(hover:hover)]:inline">Grab one, let go</span>
@@ -141,6 +144,13 @@ export default function Team() {
           )}
         </div>
       </div>
+
+      <TeamModal
+        members={OFFICE_BEARERS}
+        index={openIndex}
+        onClose={() => setOpenIndex(null)}
+        onMove={setOpenIndex}
+      />
     </section>
   );
 }
